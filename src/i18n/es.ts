@@ -1,0 +1,40 @@
+export const es = {
+  auth: {
+    login: "Iniciar sesión",
+    register: "Registrarse",
+    logout: "Cerrar sesión",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    resetPassword: "Restablecer contraseña",
+    continueWithGoogle: "Continuar con Google",
+    alreadyHaveAccount: "¿Ya tienes cuenta?",
+    dontHaveAccount: "¿No tienes cuenta?",
+    checkEmail: "Revisa tu correo electrónico",
+    emailSent: "Te hemos enviado un enlace para restablecer tu contraseña.",
+    verifyEmail:
+      "Te hemos enviado un correo de verificación. Por favor, confírmalo antes de iniciar sesión.",
+  },
+  validation: {
+    emailRequired: "El correo electrónico es obligatorio.",
+    emailInvalid: "El correo electrónico no es válido.",
+    passwordRequired: "La contraseña es obligatoria.",
+    passwordMinLength: "La contraseña debe tener al menos 8 caracteres.",
+    passwordMismatch: "Las contraseñas no coinciden.",
+  },
+  calendar: {
+    noConcerts: "Aún no hay conciertos publicados.",
+    today: "Hoy",
+    month: "Mes",
+    week: "Semana",
+    day: "Día",
+  },
+  common: {
+    loading: "Cargando…",
+    error: "Ha ocurrido un error inesperado.",
+    save: "Guardar",
+    cancel: "Cancelar",
+    delete: "Eliminar",
+    edit: "Editar",
+  },
+} as const;
