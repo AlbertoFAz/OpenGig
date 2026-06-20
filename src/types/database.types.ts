@@ -28,6 +28,59 @@ export type Database = {
   };
   public: {
     Tables: {
+      concerts: {
+        Row: {
+          created_at: string;
+          created_by: string;
+          date_time: string;
+          description: string;
+          id: string;
+          image_url: string | null;
+          name: string;
+          price: number | null;
+          ticket_url: string | null;
+          updated_at: string;
+          venue_address: string;
+          venue_name: string;
+        };
+        Insert: {
+          created_at?: string;
+          created_by: string;
+          date_time: string;
+          description?: string;
+          id?: string;
+          image_url?: string | null;
+          name: string;
+          price?: number | null;
+          ticket_url?: string | null;
+          updated_at?: string;
+          venue_address?: string;
+          venue_name: string;
+        };
+        Update: {
+          created_at?: string;
+          created_by?: string;
+          date_time?: string;
+          description?: string;
+          id?: string;
+          image_url?: string | null;
+          name?: string;
+          price?: number | null;
+          ticket_url?: string | null;
+          updated_at?: string;
+          venue_address?: string;
+          venue_name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "concerts_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           created_at: string;
@@ -63,7 +116,10 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      concert_is_past: {
+        Args: { concert: Database["public"]["Tables"]["concerts"]["Row"] };
+        Returns: boolean;
+      };
     };
     Enums: {
       user_role: "USER";

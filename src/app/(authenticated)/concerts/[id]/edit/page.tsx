@@ -1,0 +1,51 @@
+import { notFound, redirect } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getConcertById } from "@/lib/repositories/concerts";
+import { createClient } from "@/lib/supabase/server";
+import { ConcertForm } from "@/components/concert/ConcertForm";
+import type { ConcertInput } from "@/lib/schemas/concert";
+import { format } from "date-fns";
+
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditConcertPage({ params }: PageProps) {
+  const { id } = await params;
+  const result = await getConcertById(id);
+  if (!result.ok) notFound();
+
+  const concert = result.data;
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== concert.created_by) redirect("/");
+
+  const defaultValues: Partial<ConcertInput> & { id: string; image_url?: string } = {
+    id: concert.id,
+    name: concert.name,
+    description: concert.description ?? undefined,
+    date_time: format(new Date(concert.date_time), "yyyy-MM-dd'T'HH:mm"),
+    venue_name: concert.venue_name,
+    venue_address: concert.venue_address ?? undefined,
+    ticket_url: concert.ticket_url ?? undefined,
+    price: concert.price !== null ? Number(concert.price) : undefined,
+    ...(concert.image_url ? { image_url: concert.image_url } : {}),
+  };
+
+  return (
+    <div className="mx-auto max-w-2xl px-4 py-10">
+      <Card>
+        <CardHeader>
+          <CardTitle>Editar concierto</CardTitle>
+          <CardDescription>Modifica los datos del concierto.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ConcertForm defaultValues={defaultValues} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

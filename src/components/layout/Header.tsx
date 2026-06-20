@@ -21,12 +21,20 @@ export function Header({ user }: HeaderProps) {
             Calendario
           </Link>
           {user && (
-            <Link
-              href="/me/calendar"
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Mi calendario
-            </Link>
+            <>
+              <Link
+                href="/me/calendar"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Mi calendario
+              </Link>
+              <Link
+                href="/concerts/new"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Publicar concierto
+              </Link>
+            </>
           )}
         </nav>
 
