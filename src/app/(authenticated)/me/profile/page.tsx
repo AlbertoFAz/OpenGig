@@ -20,10 +20,10 @@ export default async function MyProfilePage() {
           <div className="flex items-center gap-3">
             <div>
               <CardTitle>Mi perfil</CardTitle>
-              <CardDescription className="mt-1">
+              <CardDescription className="mt-1 flex flex-wrap items-center gap-2">
                 <span className="text-muted-foreground text-sm">@{profile.username}</span>
-                {" · "}
                 <Badge variant="secondary">{ROLE_LABELS[profile.role]}</Badge>
+                <span className="text-muted-foreground text-sm">Prestigio: {profile.prestige}</span>
               </CardDescription>
             </div>
           </div>

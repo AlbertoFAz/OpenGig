@@ -47,7 +47,6 @@ CREATE POLICY update_own_read_state ON public.notifications
 GRANT SELECT, UPDATE ON public.notifications TO authenticated;
 -- service_role necesita ALL para crear notificaciones desde triggers/funciones y para tests de integración
 GRANT ALL ON public.notifications TO service_role;
-GRANT ALL ON public.promotion_logs TO service_role;
 GRANT ALL ON public.system_config TO service_role;
 
 -- Tabla de logs de promoción
@@ -67,6 +66,7 @@ CREATE POLICY select_own ON public.promotion_logs
   FOR SELECT USING (auth.uid() = user_id);
 
 GRANT SELECT ON public.promotion_logs TO authenticated;
+GRANT ALL ON public.promotion_logs TO service_role;
 
 -- ============================================================
 -- Función check_promotion: crea oferta de promoción si procede

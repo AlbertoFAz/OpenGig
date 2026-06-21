@@ -25,22 +25,22 @@ export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   return data ?? [];
 }
 
-/** Top 10 conciertos de hoy ordenados por score (likes + prestige) */
-export async function getFeaturedTodayConcerts(): Promise<
+/** Top conciertos de los próximos 7 días para la sección "Destacados" */
+export async function getFeaturedConcerts(): Promise<
   (Concert & { profiles: { display_name: string; prestige: number } | null })[]
 > {
   const supabase = await createClient();
-  const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
+  const from = new Date().toISOString();
+  const to = new Date(Date.now() + 7 * 86_400_000).toISOString();
 
   const { data } = await supabase
     .from("concerts")
     .select("*, profiles!created_by(display_name, prestige)")
     .eq("visibility", "PUBLIC")
-    .gte("date_time", startOfDay.toISOString())
-    .lte("date_time", endOfDay.toISOString());
+    .gte("date_time", from)
+    .lte("date_time", to)
+    .order("likes_count", { ascending: false })
+    .limit(20);
 
   return data ?? [];
 }

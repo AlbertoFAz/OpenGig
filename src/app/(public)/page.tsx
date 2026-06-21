@@ -1,4 +1,4 @@
-import { getFeaturedTodayConcerts, getUpcomingConcerts } from "@/lib/repositories/concerts";
+import { getFeaturedConcerts, getUpcomingConcerts } from "@/lib/repositories/concerts";
 import { rankConcerts } from "@/lib/ranking";
 import { PublicCalendar } from "@/components/calendar/PublicCalendar";
 import { ConcertCard } from "@/components/concert/ConcertCard";
@@ -8,7 +8,7 @@ export const metadata = { title: "OpenGig — Calendario de conciertos" };
 export default async function HomePage() {
   const [upcomingConcerts, todayConcerts] = await Promise.all([
     getUpcomingConcerts(180),
-    getFeaturedTodayConcerts(),
+    getFeaturedConcerts(),
   ]);
 
   const featured = rankConcerts(todayConcerts).slice(0, 10);
@@ -22,7 +22,7 @@ export default async function HomePage() {
 
       {featured.length > 0 && (
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Destacados de hoy</h2>
+          <h2 className="mb-4 text-lg font-semibold">Próximos destacados</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((concert) => (
               <ConcertCard key={concert.id} concert={concert} />

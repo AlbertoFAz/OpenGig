@@ -65,11 +65,9 @@ export default async function PublicProfilePage({ params }: PageProps) {
           </div>
           <p className="text-muted-foreground text-sm">@{profile.username}</p>
 
-          {profile.prestige > 0 && (
-            <p className="mt-1 text-sm">
-              <span className="font-medium">Prestigio:</span> {profile.prestige}
-            </p>
-          )}
+          <p className="mt-1 text-sm">
+            <span className="font-medium">Prestigio:</span> {profile.prestige}
+          </p>
 
           {profile.biography && <p className="mt-3 text-sm leading-relaxed">{profile.biography}</p>}
 
