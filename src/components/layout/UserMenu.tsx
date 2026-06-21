@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -24,6 +24,7 @@ interface UserMenuProps {
 
 export function UserMenu({ user }: UserMenuProps) {
   const router = useRouter();
+  const { t } = useLocale();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -40,10 +41,10 @@ export function UserMenu({ user }: UserMenuProps) {
     return (
       <div className="flex items-center gap-2">
         <Button variant="ghost" asChild size="sm">
-          <Link href="/login">{es.auth.login}</Link>
+          <Link href="/login">{t.auth.login}</Link>
         </Button>
         <Button asChild size="sm">
-          <Link href="/register">{es.auth.register}</Link>
+          <Link href="/register">{t.auth.register}</Link>
         </Button>
       </div>
     );
@@ -54,20 +55,20 @@ export function UserMenu({ user }: UserMenuProps) {
       <span className="hidden text-sm text-muted-foreground sm:block">{user.email}</span>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Menú de usuario">
+          <Button variant="ghost" size="icon" aria-label={t.user.menuLabel}>
             <User className="h-5 w-5" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-xs">
           <DialogHeader>
-            <DialogTitle>Mi cuenta</DialogTitle>
+            <DialogTitle>{t.user.myAccount}</DialogTitle>
             <DialogDescription>{user.email}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-2 pt-2">
             <Button variant="ghost" className="justify-start gap-2" asChild>
               <Link href="/me/profile">
                 <User className="h-4 w-4" />
-                Mi perfil
+                {t.user.myProfile}
               </Link>
             </Button>
             <Button
@@ -76,7 +77,7 @@ export function UserMenu({ user }: UserMenuProps) {
               onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" />
-              {es.auth.logout}
+              {t.auth.logout}
             </Button>
           </div>
         </DialogContent>

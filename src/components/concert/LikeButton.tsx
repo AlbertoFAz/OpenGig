@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 
 interface LikeButtonProps {
   concertId: string;
   initialLiked: boolean;
   initialCount: number;
-  /** Si es null el usuario no está autenticado */
   userId: string | null;
 }
 
@@ -18,8 +18,8 @@ export function LikeButton({ concertId, initialLiked, initialCount, userId }: Li
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
   const [loading, setLoading] = useState(false);
+  const { t } = useLocale();
 
-  // Suscripción Realtime al likes_count del concierto
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -46,7 +46,7 @@ export function LikeButton({ concertId, initialLiked, initialCount, userId }: Li
 
   async function handleToggle() {
     if (!userId) {
-      toast.info("Inicia sesión para valorar este concierto.");
+      toast.info(t.concert.loginToLike);
       return;
     }
     setLoading(true);
@@ -59,7 +59,7 @@ export function LikeButton({ concertId, initialLiked, initialCount, userId }: Li
         .eq("user_id", userId)
         .eq("concert_id", concertId);
       if (error) {
-        toast.error("Error al quitar el like.");
+        toast.error(t.concert.unlikeError);
       } else {
         setLiked(false);
       }
@@ -68,7 +68,7 @@ export function LikeButton({ concertId, initialLiked, initialCount, userId }: Li
         .from("likes")
         .insert({ user_id: userId, concert_id: concertId });
       if (error) {
-        toast.error("Error al dar like.");
+        toast.error(t.concert.likeError);
       } else {
         setLiked(true);
       }
@@ -82,7 +82,7 @@ export function LikeButton({ concertId, initialLiked, initialCount, userId }: Li
       size="sm"
       onClick={handleToggle}
       disabled={loading}
-      aria-label={liked ? "Quitar like" : "Dar like"}
+      aria-label={liked ? t.concert.unlike : t.concert.like}
       className="gap-1.5"
     >
       <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />

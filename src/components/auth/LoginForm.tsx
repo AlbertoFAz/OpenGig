@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 import { loginSchema, type LoginInput } from "@/lib/schemas/auth";
 import { createClient } from "@/lib/supabase/client";
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,6 +23,7 @@ import {
 
 export function LoginForm() {
   const router = useRouter();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginInput>({
@@ -63,7 +64,7 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{es.auth.email}</FormLabel>
+              <FormLabel>{t.auth.email}</FormLabel>
               <FormControl>
                 <Input type="email" autoComplete="email" placeholder="tu@email.com" {...field} />
               </FormControl>
@@ -78,12 +79,12 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>{es.auth.password}</FormLabel>
+                <FormLabel>{t.auth.password}</FormLabel>
                 <Link
                   href="/forgot-password"
                   className="text-sm text-muted-foreground hover:underline"
                 >
-                  {es.auth.forgotPassword}
+                  {t.auth.forgotPassword}
                 </Link>
               </div>
               <FormControl>
@@ -95,17 +96,17 @@ export function LoginForm() {
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? es.common.loading : es.auth.login}
+          {loading ? t.common.loading : t.auth.login}
         </Button>
 
         <Button type="button" variant="outline" className="w-full" onClick={onGoogleLogin}>
-          {es.auth.continueWithGoogle}
+          {t.auth.continueWithGoogle}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          {es.auth.dontHaveAccount}{" "}
+          {t.auth.dontHaveAccount}{" "}
           <Link href="/register" className="font-medium hover:underline">
-            {es.auth.register}
+            {t.auth.register}
           </Link>
         </p>
       </form>

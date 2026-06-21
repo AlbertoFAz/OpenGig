@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { resetPasswordSchema, type ResetPasswordInput } from "@/lib/schemas/auth";
 import { createClient } from "@/lib/supabase/client";
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +22,7 @@ import {
 
 export function ResetPasswordForm() {
   const router = useRouter();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<ResetPasswordInput>({
@@ -41,7 +42,7 @@ export function ResetPasswordForm() {
       toast.error(error.message);
       return;
     }
-    toast.success("Contraseña actualizada correctamente.");
+    toast.success(t.resetPassword.success);
     router.push("/login");
   }
 
@@ -53,7 +54,7 @@ export function ResetPasswordForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nueva contraseña</FormLabel>
+              <FormLabel>{t.resetPassword.newPassword}</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -67,7 +68,7 @@ export function ResetPasswordForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar nueva contraseña</FormLabel>
+              <FormLabel>{t.resetPassword.confirmNewPassword}</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -77,7 +78,7 @@ export function ResetPasswordForm() {
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? es.common.loading : "Guardar nueva contraseña"}
+          {loading ? t.common.loading : t.resetPassword.save}
         </Button>
       </form>
     </Form>

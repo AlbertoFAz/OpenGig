@@ -3,8 +3,9 @@
 import { useEffect, useState, useTransition } from "react";
 import { Bell, CheckCheck } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { es as dateFnsEs, enUS } from "date-fns/locale";
 import { createClient } from "@/lib/supabase/client";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { Notification } from "@/lib/repositories/notifications";
@@ -32,8 +33,9 @@ export function NotificationBell({
   const [open, setOpen] = useState(false);
   const [, startTransition] = useTransition();
   const router = useRouter();
+  const { t, locale } = useLocale();
+  const dateFnsLocale = locale === "en" ? enUS : dateFnsEs;
 
-  // Suscripción Realtime a notificaciones nuevas
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -90,7 +92,6 @@ export function NotificationBell({
 
   async function handleRejectPromotion(notifId: string) {
     const supabase = createClient();
-    // Registrar rechazo en promotion_logs
     await supabase
       .from("promotion_logs")
       .update({ rejected_at: new Date().toISOString() })
@@ -102,7 +103,7 @@ export function NotificationBell({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label="Notificaciones">
+        <Button variant="ghost" size="icon" className="relative" aria-label={t.notifications.title}>
           <Bell className="h-5 w-5" />
           {unread > 0 && (
             <span className="bg-destructive text-destructive-foreground absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold">
@@ -113,18 +114,18 @@ export function NotificationBell({
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b px-4 py-3">
-          <p className="font-semibold">Notificaciones</p>
+          <p className="font-semibold">{t.notifications.title}</p>
           {unread > 0 && (
             <Button variant="ghost" size="sm" className="h-7 gap-1 text-xs" onClick={markAllRead}>
               <CheckCheck className="h-3.5 w-3.5" />
-              Marcar todas
+              {t.notifications.markAll}
             </Button>
           )}
         </div>
 
         {notifications.length === 0 ? (
           <p className="text-muted-foreground px-4 py-6 text-center text-sm">
-            No tienes notificaciones.
+            {t.notifications.empty}
           </p>
         ) : (
           <ul className="max-h-96 overflow-y-auto divide-y">
@@ -137,11 +138,10 @@ export function NotificationBell({
                     <p className="text-muted-foreground mt-0.5 text-xs">
                       {formatDistanceToNow(new Date(n.created_at), {
                         addSuffix: true,
-                        locale: es,
+                        locale: dateFnsLocale,
                       })}
                     </p>
 
-                    {/* Botones de acción para oferta de promoción */}
                     {n.type === "PROMOTION_OFFER" && !n.read_at && (
                       <div className="mt-2 flex gap-2">
                         <Button
@@ -149,7 +149,7 @@ export function NotificationBell({
                           className="h-7 text-xs"
                           onClick={() => handleAcceptPromotion(n.id)}
                         >
-                          Aceptar
+                          {t.notifications.accept}
                         </Button>
                         <Button
                           size="sm"
@@ -157,7 +157,7 @@ export function NotificationBell({
                           className="h-7 text-xs"
                           onClick={() => handleRejectPromotion(n.id)}
                         >
-                          Rechazar
+                          {t.notifications.reject}
                         </Button>
                       </div>
                     )}
@@ -167,7 +167,7 @@ export function NotificationBell({
                     <button
                       onClick={() => markRead(n.id)}
                       className="text-muted-foreground hover:text-foreground mt-0.5 shrink-0 text-xs"
-                      aria-label="Marcar como leída"
+                      aria-label={t.notifications.markRead}
                     >
                       ✕
                     </button>

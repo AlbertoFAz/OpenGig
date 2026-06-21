@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import type { CalendarEntryWithConcert } from "@/lib/repositories/calendar-entries";
 
@@ -14,10 +15,10 @@ interface CalendarEntryPanelProps {
 
 export function CalendarEntryPanel({ entry, onClose, onDeleted }: CalendarEntryPanelProps) {
   const [deleting, setDeleting] = useState(false);
+  const { t, locale } = useLocale();
 
   const dt = entry.date_time ? new Date(entry.date_time) : null;
-  const title = entry.title ?? "Entrada personal";
-  const description = entry.description;
+  const title = entry.title ?? t.calendar.personalEntry;
 
   async function handleDelete() {
     setDeleting(true);
@@ -25,12 +26,12 @@ export function CalendarEntryPanel({ entry, onClose, onDeleted }: CalendarEntryP
       const res = await fetch(`/api/me/calendar/entries/${entry.id}`, { method: "DELETE" });
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(body.error ?? "Error al eliminar.");
+        throw new Error(body.error ?? t.common.unexpectedError);
       }
-      toast.success("Entrada eliminada.");
+      toast.success(t.calendar.entryDeleted);
       onDeleted();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error inesperado.");
+      toast.error(err instanceof Error ? err.message : t.common.unexpectedError);
     } finally {
       setDeleting(false);
     }
@@ -43,7 +44,7 @@ export function CalendarEntryPanel({ entry, onClose, onDeleted }: CalendarEntryP
         <button
           onClick={onClose}
           className="text-muted-foreground hover:text-foreground absolute right-4 top-4"
-          aria-label="Cerrar"
+          aria-label={t.common.close}
         >
           <X className="h-5 w-5" />
         </button>
@@ -52,7 +53,7 @@ export function CalendarEntryPanel({ entry, onClose, onDeleted }: CalendarEntryP
 
         {dt && (
           <p className="text-muted-foreground mb-3 text-sm">
-            {dt.toLocaleDateString("es-ES", {
+            {dt.toLocaleDateString(locale === "en" ? "en-GB" : "es-ES", {
               weekday: "long",
               year: "numeric",
               month: "long",
@@ -63,12 +64,12 @@ export function CalendarEntryPanel({ entry, onClose, onDeleted }: CalendarEntryP
           </p>
         )}
 
-        {description && <p className="text-sm">{description}</p>}
+        {entry.description && <p className="text-sm">{entry.description}</p>}
 
         <div className="mt-5 flex justify-end">
           <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleting}>
             <Trash2 className="mr-1.5 h-4 w-4" />
-            {deleting ? "Eliminando…" : "Eliminar entrada"}
+            {deleting ? t.calendar.deletingEntry : t.calendar.deleteEntry}
           </Button>
         </div>
       </div>

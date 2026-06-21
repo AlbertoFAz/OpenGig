@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
 import { REGISTERABLE_ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 
 export function RegisterForm() {
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -61,8 +62,8 @@ export function RegisterForm() {
   if (sent) {
     return (
       <div className="grid gap-2 text-center">
-        <p className="font-medium">{es.auth.checkEmail}</p>
-        <p className="text-sm text-muted-foreground">{es.auth.verifyEmail}</p>
+        <p className="font-medium">{t.auth.checkEmail}</p>
+        <p className="text-sm text-muted-foreground">{t.auth.verifyEmail}</p>
       </div>
     );
   }
@@ -76,7 +77,7 @@ export function RegisterForm() {
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>¿Cómo usarás OpenGig? *</FormLabel>
+              <FormLabel>{t.register.roleQuestion}</FormLabel>
               <FormControl>
                 <div className="grid gap-2">
                   {REGISTERABLE_ROLES.map((role) => (
@@ -113,7 +114,7 @@ export function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{es.auth.email}</FormLabel>
+              <FormLabel>{t.auth.email}</FormLabel>
               <FormControl>
                 <Input type="email" autoComplete="email" placeholder="tu@email.com" {...field} />
               </FormControl>
@@ -127,7 +128,7 @@ export function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{es.auth.password}</FormLabel>
+              <FormLabel>{t.auth.password}</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -141,7 +142,7 @@ export function RegisterForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Confirmar contraseña</FormLabel>
+              <FormLabel>{t.register.confirmPassword}</FormLabel>
               <FormControl>
                 <Input type="password" autoComplete="new-password" {...field} />
               </FormControl>
@@ -151,17 +152,17 @@ export function RegisterForm() {
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? es.common.loading : es.auth.register}
+          {loading ? t.common.loading : t.auth.register}
         </Button>
 
         <Button type="button" variant="outline" className="w-full" onClick={onGoogleLogin}>
-          {es.auth.continueWithGoogle}
+          {t.auth.continueWithGoogle}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
-          {es.auth.alreadyHaveAccount}{" "}
+          {t.auth.alreadyHaveAccount}{" "}
           <Link href="/login" className="font-medium hover:underline">
-            {es.auth.login}
+            {t.auth.login}
           </Link>
         </p>
       </form>

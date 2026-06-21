@@ -10,6 +10,7 @@ import { Globe, Lock, Link as LinkIcon, Upload } from "lucide-react";
 import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
 import type { UserRole } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { ArtistSelector } from "@/components/concert/ArtistSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,11 +25,9 @@ import {
 } from "@/components/ui/form";
 
 interface ConcertFormProps {
-  /** Si se pasa, el formulario está en modo edición */
   defaultValues?: Partial<ConcertInput> & {
     id?: string;
     image_url?: string;
-    /** Artistas vinculados al concierto (solo en edición) */
     artistIds?: string[];
   };
   userRole?: UserRole;
@@ -36,13 +35,12 @@ interface ConcertFormProps {
 
 export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormProps) {
   const router = useRouter();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
   const [imageMode, setImageMode] = useState<"file" | "url">("file");
   const [imageUrlInput, setImageUrlInput] = useState("");
   const isEditing = !!defaultValues?.id;
-  // ARTIST y VENUE solo crean conciertos públicos.
-  // USER y COLLABORATOR pueden elegir PUBLIC o PRIVATE.
   const onlyPublic = userRole === "ARTIST" || userRole === "VENUE";
 
   const form = useForm<ConcertInput>({
@@ -71,7 +69,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           try {
             new URL(imageUrlInput.trim());
           } catch {
-            throw new Error("La URL de la imagen no es válida.");
+            throw new Error(t.common.unexpectedError);
           }
           image_url = imageUrlInput.trim();
         }
@@ -79,7 +77,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        if (!user) throw new Error("No autenticado");
+        if (!user) throw new Error(t.common.unexpectedError);
 
         const ext = values.image.name.split(".").pop();
         const uniqueId = crypto.randomUUID();
@@ -128,7 +126,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         concertId = id;
       }
 
-      toast.success(isEditing ? "Concierto actualizado." : "Concierto publicado.");
+      toast.success(isEditing ? t.concert.updated : t.concert.published);
 
       if (!onlyPublic && values.visibility === "PRIVATE") {
         router.push("/me/calendar");
@@ -137,7 +135,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
       }
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error inesperado.");
+      toast.error(err instanceof Error ? err.message : t.common.unexpectedError);
     } finally {
       setLoading(false);
     }
@@ -151,9 +149,9 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre del concierto *</FormLabel>
+              <FormLabel>{t.concert.name}</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. The Rolling Stones en Madrid" {...field} />
+                <Input placeholder={t.concert.namePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -165,11 +163,11 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Descripción</FormLabel>
+              <FormLabel>{t.concert.description}</FormLabel>
               <FormControl>
                 <textarea
                   className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[100px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Describe el concierto..."
+                  placeholder={t.concert.descriptionPlaceholder}
                   maxLength={2000}
                   {...field}
                 />
@@ -185,7 +183,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             name="date_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fecha y hora *</FormLabel>
+                <FormLabel>{t.concert.dateTime}</FormLabel>
                 <FormControl>
                   <Input type="datetime-local" {...field} />
                 </FormControl>
@@ -199,7 +197,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Precio (€)</FormLabel>
+                <FormLabel>{t.concert.price}</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -224,9 +222,9 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           name="venue_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Sala / Recinto *</FormLabel>
+              <FormLabel>{t.concert.venue}</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. Wizink Center" {...field} />
+                <Input placeholder={t.concert.venuePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -238,9 +236,9 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           name="venue_address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Dirección</FormLabel>
+              <FormLabel>{t.concert.address}</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. Av. de Felipe II, Madrid" {...field} />
+                <Input placeholder={t.concert.addressPlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -252,7 +250,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           name="ticket_url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>URL de entradas</FormLabel>
+              <FormLabel>{t.concert.ticketUrl}</FormLabel>
               <FormControl>
                 <Input type="url" placeholder="https://..." {...field} />
               </FormControl>
@@ -262,9 +260,8 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         />
 
         <FormItem>
-          <FormLabel>Imagen del concierto</FormLabel>
+          <FormLabel>{t.concert.image}</FormLabel>
 
-          {/* Toggle archivo / URL */}
           <div className="mb-2 flex gap-2">
             <button
               type="button"
@@ -276,7 +273,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
               }`}
             >
               <Upload className="h-3.5 w-3.5" />
-              Subir archivo
+              {t.concert.uploadFile}
             </button>
             <button
               type="button"
@@ -288,7 +285,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
               }`}
             >
               <LinkIcon className="h-3.5 w-3.5" />
-              Usar URL
+              {t.concert.useUrl}
             </button>
           </div>
 
@@ -309,7 +306,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
                       onChange={(e) => onChange(e.target.files?.[0])}
                     />
                   </FormControl>
-                  <FormDescription>JPG, PNG o WebP · máximo 5 MB</FormDescription>
+                  <FormDescription>{t.concert.imageFileMeta}</FormDescription>
                   <FormMessage />
                 </>
               )}
@@ -319,49 +316,42 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
               <FormControl>
                 <Input
                   type="url"
-                  placeholder="https://ejemplo.com/imagen.jpg"
+                  placeholder={t.concert.imageUrlPlaceholder}
                   value={imageUrlInput}
                   onChange={(e) => setImageUrlInput(e.target.value)}
                 />
               </FormControl>
-              <FormDescription>URL pública de una imagen JPG, PNG o WebP.</FormDescription>
+              <FormDescription>{t.concert.imageUrlMeta}</FormDescription>
             </>
           )}
 
           {defaultValues?.image_url && (
             <p className="text-muted-foreground text-xs">
-              Imagen actual:{" "}
+              {t.concert.currentImage}{" "}
               <a
                 href={defaultValues.image_url}
                 target="_blank"
                 rel="noreferrer"
                 className="underline"
               >
-                ver
+                {t.concert.view}
               </a>
             </p>
           )}
         </FormItem>
 
-        {/* Selector de artistas — ARTIST y VENUE */}
         {(userRole === "ARTIST" || userRole === "VENUE" || userRole === "COLLABORATOR") && (
           <div className="grid gap-2">
-            <p className="text-sm font-medium">Artistas</p>
+            <p className="text-sm font-medium">{t.concert.artists}</p>
             <ArtistSelector value={artistIds} onChange={setArtistIds} />
-            <p className="text-muted-foreground text-xs">
-              Vincula los artistas registrados que actúan en este concierto.
-            </p>
+            <p className="text-muted-foreground text-xs">{t.concert.artistsHint}</p>
           </div>
         )}
 
-        {/* Toggle de visibilidad — no disponible para ARTIST y VENUE (siempre público) */}
         {onlyPublic ? (
           <div className="text-muted-foreground flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
             <Globe className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>
-              Los artistas y salas publican conciertos en el calendario público. No es posible crear
-              conciertos privados con este rol.
-            </span>
+            <span>{t.concert.publicOnlyHint}</span>
           </div>
         ) : (
           <FormField
@@ -369,7 +359,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             name="visibility"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Visibilidad</FormLabel>
+                <FormLabel>{t.concert.visibility}</FormLabel>
                 <FormControl>
                   <div className="flex gap-2">
                     <button
@@ -382,7 +372,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
                       }`}
                     >
                       <Globe className="h-4 w-4" />
-                      Público
+                      {t.concert.public}
                     </button>
                     <button
                       type="button"
@@ -394,14 +384,12 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
                       }`}
                     >
                       <Lock className="h-4 w-4" />
-                      Privado
+                      {t.concert.private}
                     </button>
                   </div>
                 </FormControl>
                 <FormDescription>
-                  {field.value === "PUBLIC"
-                    ? "El concierto aparecerá en el calendario público."
-                    : "Solo tú podrás verlo en tu calendario privado."}
+                  {field.value === "PUBLIC" ? t.concert.publicDesc : t.concert.privateDesc}
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -411,10 +399,10 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
 
         <div className="flex gap-3 pt-2">
           <Button type="submit" disabled={loading} className="flex-1">
-            {loading ? "Guardando…" : isEditing ? "Guardar cambios" : "Publicar concierto"}
+            {loading ? t.concert.saving : isEditing ? t.concert.saveChanges : t.concert.publish}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.back()}>
-            Cancelar
+            {t.common.cancel}
           </Button>
         </div>
       </form>

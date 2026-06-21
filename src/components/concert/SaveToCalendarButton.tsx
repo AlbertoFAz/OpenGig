@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { CalendarPlus, CalendarMinus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 
 interface SaveToCalendarButtonProps {
@@ -19,6 +20,7 @@ export function SaveToCalendarButton({
   const [saved, setSaved] = useState(initialSaved);
   const [count, setCount] = useState(initialCount);
   const [isPending, startTransition] = useTransition();
+  const { t } = useLocale();
 
   function toggle() {
     startTransition(async () => {
@@ -27,13 +29,13 @@ export function SaveToCalendarButton({
 
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        toast.error(body.error ?? "Error al actualizar el calendario.");
+        toast.error(body.error ?? t.concert.calendarError);
         return;
       }
 
       setSaved(!saved);
       setCount((c) => (saved ? c - 1 : c + 1));
-      toast.success(saved ? "Eliminado de tu calendario." : "Guardado en tu calendario.");
+      toast.success(saved ? t.concert.removedFromCalendar : t.concert.savedToCalendar);
     });
   }
 
@@ -46,7 +48,7 @@ export function SaveToCalendarButton({
       ) : (
         <CalendarPlus className="mr-2 h-4 w-4" />
       )}
-      {saved ? "Eliminar de mi calendario" : "Guardar en mi calendario"}
+      {saved ? t.concert.removeFromCalendar : t.concert.saveToCalendar}
       <span className="text-muted-foreground ml-2 text-xs">({count})</span>
     </Button>
   );

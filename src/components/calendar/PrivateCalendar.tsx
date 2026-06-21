@@ -7,7 +7,7 @@ import { es as dateFnsEs } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import type { CalendarEntryWithConcert } from "@/lib/repositories/calendar-entries";
 import { CalendarEntryPanel } from "./CalendarEntryPanel";
 
@@ -18,17 +18,6 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales: { es: dateFnsEs },
 });
-
-const MESSAGES = {
-  today: es.calendar.today,
-  previous: "Anterior",
-  next: "Siguiente",
-  month: es.calendar.month,
-  week: es.calendar.week,
-  day: es.calendar.day,
-  noEventsInRange: "No tienes entradas en este periodo.",
-  showMore: (total: number) => `+${total} más`,
-};
 
 interface CalendarEvent {
   id: string;
@@ -45,7 +34,19 @@ interface PrivateCalendarProps {
 
 export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) {
   const router = useRouter();
+  const { t } = useLocale();
   const [view, setView] = useState<View>("month");
+
+  const MESSAGES = {
+    today: t.calendar.today,
+    previous: "Anterior",
+    next: "Siguiente",
+    month: t.calendar.month,
+    week: t.calendar.week,
+    day: t.calendar.day,
+    noEventsInRange: t.calendar.noEntries,
+    showMore: (total: number) => `+${total} más`,
+  };
   const [date, setDate] = useState(new Date());
   const [selectedEntry, setSelectedEntry] = useState<CalendarEntryWithConcert | null>(null);
 
@@ -60,7 +61,7 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
     const endOfDay = new Date(start);
     endOfDay.setHours(23, 59, 59, 0);
     const end = candidate > endOfDay ? endOfDay : candidate;
-    const title = entry.concerts?.name ?? entry.title ?? "Entrada personal";
+    const title = entry.concerts?.name ?? entry.title ?? t.calendar.personalEntry;
 
     return { id: entry.id, title, start, end, resource: entry };
   });
@@ -88,15 +89,15 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
       <div className="mb-4 flex flex-wrap gap-4 text-sm">
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full bg-green-500" />
-          Mis conciertos
+          {t.calendar.myEvents}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full bg-blue-500" />
-          Conciertos guardados
+          {t.calendar.savedEvents}
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full bg-orange-500" />
-          Entradas personales
+          {t.calendar.personalEntries}
         </span>
       </div>
 

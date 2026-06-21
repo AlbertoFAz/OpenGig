@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { profileSchema, type ProfileInput } from "@/lib/schemas/profile";
 import type { Profile } from "@/lib/repositories/profiles";
 import { createClient } from "@/lib/supabase/client";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +29,7 @@ interface ProfileFormProps {
 export function ProfileForm({ profile }: ProfileFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { t } = useLocale();
 
   const socialLinks = (profile.social_links ?? {}) as Record<string, string>;
 
@@ -69,7 +71,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         image_url = urlData.publicUrl;
       }
 
-      // Limpiar campos vacíos de social_links
       const cleanedSocialLinks = Object.fromEntries(
         Object.entries(values.social_links ?? {}).filter(([, v]) => v && v !== "")
       );
@@ -97,10 +98,10 @@ export function ProfileForm({ profile }: ProfileFormProps) {
 
       if (!res.ok) throw new Error(((await res.json()) as { error: string }).error);
 
-      toast.success("Perfil actualizado.");
+      toast.success(t.profile.updated);
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error inesperado.");
+      toast.error(err instanceof Error ? err.message : t.common.unexpectedError);
     } finally {
       setLoading(false);
     }
@@ -109,18 +110,17 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-        {/* Imagen de perfil */}
         <FormField
           control={form.control}
           name="image"
           render={({ field: { onChange, ref, name, onBlur, disabled } }) => (
             <FormItem>
-              <FormLabel>Imagen de perfil</FormLabel>
+              <FormLabel>{t.profile.imageLabel}</FormLabel>
               {profile.image_url && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={profile.image_url}
-                  alt="Avatar actual"
+                  alt={t.profile.imageLabel}
                   className="mb-2 h-20 w-20 rounded-full object-cover"
                 />
               )}
@@ -135,7 +135,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                   onChange={(e) => onChange(e.target.files?.[0])}
                 />
               </FormControl>
-              <FormDescription>JPG, PNG o WebP · máximo 5 MB</FormDescription>
+              <FormDescription>{t.profile.imageFileMeta}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -146,9 +146,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           name="display_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nombre visible *</FormLabel>
+              <FormLabel>{t.profile.displayName}</FormLabel>
               <FormControl>
-                <Input placeholder="Tu nombre o el de tu grupo" {...field} />
+                <Input placeholder={t.profile.displayNamePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,11 +160,11 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           name="biography"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Biografía</FormLabel>
+              <FormLabel>{t.profile.biography}</FormLabel>
               <FormControl>
                 <textarea
                   className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[100px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Cuéntanos algo sobre ti..."
+                  placeholder={t.profile.biographyPlaceholder}
                   maxLength={1000}
                   {...field}
                 />
@@ -174,7 +174,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           )}
         />
 
-        {/* Campos específicos de VENUE */}
         {role === "VENUE" && (
           <>
             <FormField
@@ -182,9 +181,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               name="venue_address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Dirección de la sala</FormLabel>
+                  <FormLabel>{t.profile.venueAddress}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Calle, número, ciudad" {...field} />
+                    <Input placeholder={t.profile.venueAddressPlaceholder} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,7 +194,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
               name="venue_capacity"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Aforo máximo</FormLabel>
+                  <FormLabel>{t.profile.venueCapacity}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -217,16 +216,15 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           </>
         )}
 
-        {/* Campos específicos de COLLABORATOR */}
         {role === "COLLABORATOR" && (
           <FormField
             control={form.control}
             name="collaborator_scope"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Ámbito de colaboración</FormLabel>
+                <FormLabel>{t.profile.collaboratorScope}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ej. Promotor de conciertos en Madrid" {...field} />
+                  <Input placeholder={t.profile.collaboratorScopePlaceholder} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -234,10 +232,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           />
         )}
 
-        {/* Redes sociales — solo para ARTIST */}
         {role === "ARTIST" && (
           <fieldset className="grid gap-4 rounded-lg border p-4">
-            <legend className="px-1 text-sm font-medium">Redes sociales</legend>
+            <legend className="px-1 text-sm font-medium">{t.profile.socialLinks}</legend>
             {(["spotify", "bandcamp", "youtube", "instagram", "website"] as const).map((key) => (
               <FormField
                 key={key}
@@ -258,7 +255,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         )}
 
         <Button type="submit" disabled={loading}>
-          {loading ? "Guardando…" : "Guardar cambios"}
+          {loading ? t.profile.saving : t.profile.saveChanges}
         </Button>
       </form>
     </Form>
