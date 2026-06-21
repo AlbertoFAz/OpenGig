@@ -18,7 +18,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const { image_url, ticket_url, price, description, venue_address, ...required } = parsed.data;
+  const { image_url, ticket_url, price, description, venue_address, visibility, ...required } =
+    parsed.data;
 
   const { data, error } = await supabase
     .from("concerts")
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
       image_url: image_url ?? null,
       ticket_url: ticket_url ?? null,
       price: price ?? null,
+      visibility: visibility ?? "PUBLIC",
     })
     .select()
     .single();
