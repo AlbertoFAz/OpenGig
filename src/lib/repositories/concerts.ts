@@ -32,7 +32,7 @@ export async function getConcertById(
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("concerts")
-    .select("*, profiles(username, display_name)")
+    .select("*, profiles!created_by(username, display_name)")
     .eq("id", id)
     .maybeSingle();
 

@@ -7,6 +7,7 @@ import { CalendarDays, MapPin, Ticket, Pencil } from "lucide-react";
 
 import { getConcertById } from "@/lib/repositories/concerts";
 import { isConcertInCalendar } from "@/lib/repositories/calendar-entries";
+import { getConcertArtists } from "@/lib/repositories/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,7 +37,10 @@ export default async function ConcertDetailPage({ params }: PageProps) {
   const savedCount = (savedCountData as number | null) ?? 0;
 
   // Comprobar si el usuario autenticado ya lo tiene guardado
-  const alreadySaved = user ? await isConcertInCalendar(concert.id) : false;
+  const [alreadySaved, artists] = await Promise.all([
+    user ? isConcertInCalendar(concert.id) : Promise.resolve(false),
+    getConcertArtists(id),
+  ]);
 
   const dateLabel = format(new Date(concert.date_time), "EEEE d 'de' MMMM yyyy 'a las' HH:mm", {
     locale: es,
@@ -96,6 +100,24 @@ export default async function ConcertDetailPage({ params }: PageProps) {
           </div>
         )}
       </dl>
+
+      {/* Artistas */}
+      {artists.length > 0 && (
+        <div className="mb-6">
+          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide">Artistas</h2>
+          <div className="flex flex-wrap gap-2">
+            {artists.map((artist) => (
+              <Link
+                key={artist.id}
+                href={`/profile/${artist.username}`}
+                className="bg-secondary text-secondary-foreground hover:bg-secondary/80 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors"
+              >
+                {artist.display_name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {concert.description && (
         <p className="mb-6 whitespace-pre-line leading-relaxed">{concert.description}</p>

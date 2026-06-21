@@ -7,6 +7,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
+import { REGISTERABLE_ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ export function RegisterForm() {
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", confirmPassword: "" },
+    defaultValues: { email: "", password: "", confirmPassword: "", role: "USER" },
   });
 
   async function onSubmit(values: RegisterInput) {
@@ -37,6 +38,7 @@ export function RegisterForm() {
       password: values.password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: { role: values.role },
       },
     });
     setLoading(false);
@@ -68,6 +70,44 @@ export function RegisterForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+        {/* Selector de rol */}
+        <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>¿Cómo usarás OpenGig? *</FormLabel>
+              <FormControl>
+                <div className="grid gap-2">
+                  {REGISTERABLE_ROLES.map((role) => (
+                    <label
+                      key={role}
+                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                        field.value === role
+                          ? "border-primary bg-primary/5"
+                          : "hover:border-muted-foreground/50"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        value={role}
+                        checked={field.value === role}
+                        onChange={() => field.onChange(role)}
+                        className="mt-0.5 accent-primary"
+                      />
+                      <div>
+                        <p className="text-sm font-medium">{ROLE_LABELS[role]}</p>
+                        <p className="text-muted-foreground text-xs">{ROLE_DESCRIPTIONS[role]}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="email"

@@ -33,6 +33,7 @@ describe("registerSchema", () => {
     email: "new@example.com",
     password: "password123",
     confirmPassword: "password123",
+    role: "USER" as const,
   };
 
   it("acepta datos válidos", () => {
