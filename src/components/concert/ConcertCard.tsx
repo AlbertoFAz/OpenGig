@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, MapPin, Ticket } from "lucide-react";
+import { CalendarDays, Heart, MapPin, Ticket } from "lucide-react";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,7 +56,13 @@ export function ConcertCard({ concert }: ConcertCardProps) {
         )}
       </CardContent>
 
-      <CardFooter className="mt-auto flex gap-2 pt-0">
+      <CardFooter className="mt-auto flex items-center gap-2 pt-0">
+        {(concert.likes_count ?? 0) > 0 && (
+          <span className="text-muted-foreground flex items-center gap-1 text-xs">
+            <Heart size={12} />
+            {concert.likes_count}
+          </span>
+        )}
         <Button asChild size="sm" variant="outline" className="flex-1">
           <Link href={`/concerts/${concert.id}`}>Ver detalles</Link>
         </Button>

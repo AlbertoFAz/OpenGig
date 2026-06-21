@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Trash2 } from "lucide-react";
 
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -25,6 +26,7 @@ interface DeleteConcertButtonProps {
 export function DeleteConcertButton({ concertId }: DeleteConcertButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { t } = useLocale();
 
   async function handleDelete() {
     setLoading(true);
@@ -34,11 +36,11 @@ export function DeleteConcertButton({ concertId }: DeleteConcertButtonProps) {
         const body = (await res.json()) as { error: string };
         throw new Error(body.error);
       }
-      toast.success("Concierto eliminado.");
+      toast.success(t.concert.deleted);
       router.push("/");
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error al eliminar.");
+      toast.error(err instanceof Error ? err.message : t.common.unexpectedError);
       setLoading(false);
     }
   }
@@ -48,24 +50,21 @@ export function DeleteConcertButton({ concertId }: DeleteConcertButtonProps) {
       <AlertDialogTrigger asChild>
         <Button variant="destructive" disabled={loading}>
           <Trash2 size={16} className="mr-2" />
-          Eliminar
+          {t.common.delete}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Eliminar concierto?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Esta acción no se puede deshacer. El concierto y su imagen se eliminarán
-            permanentemente.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t.concert.deleteTitle}</AlertDialogTitle>
+          <AlertDialogDescription>{t.concert.deleteDesc}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{t.common.cancel}</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            Eliminar
+            {t.common.delete}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

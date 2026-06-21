@@ -25,6 +25,26 @@ export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   return data ?? [];
 }
 
+/** Top conciertos de los próximos 7 días para la sección "Destacados" */
+export async function getFeaturedConcerts(): Promise<
+  (Concert & { profiles: { display_name: string; prestige: number } | null })[]
+> {
+  const supabase = await createClient();
+  const from = new Date().toISOString();
+  const to = new Date(Date.now() + 7 * 86_400_000).toISOString();
+
+  const { data } = await supabase
+    .from("concerts")
+    .select("*, profiles!created_by(display_name, prestige)")
+    .eq("visibility", "PUBLIC")
+    .gte("date_time", from)
+    .lte("date_time", to)
+    .order("likes_count", { ascending: false })
+    .limit(20);
+
+  return data ?? [];
+}
+
 /** Detalle de un concierto por id */
 export async function getConcertById(
   id: string

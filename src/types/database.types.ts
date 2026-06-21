@@ -114,6 +114,7 @@ export type Database = {
           description: string;
           id: string;
           image_url: string | null;
+          likes_count: number;
           name: string;
           price: number | null;
           ticket_url: string | null;
@@ -130,6 +131,7 @@ export type Database = {
           description?: string;
           id?: string;
           image_url?: string | null;
+          likes_count?: number;
           name: string;
           price?: number | null;
           ticket_url?: string | null;
@@ -146,6 +148,7 @@ export type Database = {
           description?: string;
           id?: string;
           image_url?: string | null;
+          likes_count?: number;
           name?: string;
           price?: number | null;
           ticket_url?: string | null;
@@ -166,6 +169,77 @@ export type Database = {
           {
             foreignKeyName: "concerts_venue_id_fkey";
             columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      likes: {
+        Row: {
+          concert_id: string;
+          created_at: string;
+          user_id: string;
+        };
+        Insert: {
+          concert_id: string;
+          created_at?: string;
+          user_id: string;
+        };
+        Update: {
+          concert_id?: string;
+          created_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "likes_concert_id_fkey";
+            columns: ["concert_id"];
+            isOneToOne: false;
+            referencedRelation: "concerts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "likes_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notifications: {
+        Row: {
+          created_at: string;
+          id: string;
+          message: string;
+          payload: Json;
+          read_at: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          message: string;
+          payload?: Json;
+          read_at?: string | null;
+          type: Database["public"]["Enums"]["notification_type"];
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          message?: string;
+          payload?: Json;
+          read_at?: string | null;
+          type?: Database["public"]["Enums"]["notification_type"];
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey";
+            columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
@@ -220,11 +294,66 @@ export type Database = {
         };
         Relationships: [];
       };
+      promotion_logs: {
+        Row: {
+          created_at: string;
+          from_role: string;
+          id: string;
+          promoted_at: string | null;
+          rejected_at: string | null;
+          to_role: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          from_role: string;
+          id?: string;
+          promoted_at?: string | null;
+          rejected_at?: string | null;
+          to_role: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          from_role?: string;
+          id?: string;
+          promoted_at?: string | null;
+          rejected_at?: string | null;
+          to_role?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "promotion_logs_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      system_config: {
+        Row: {
+          key: string;
+          value: string;
+        };
+        Insert: {
+          key: string;
+          value: string;
+        };
+        Update: {
+          key?: string;
+          value?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
+      calculate_prestige: { Args: { p_user_id: string }; Returns: number };
+      check_promotion: { Args: { p_user_id: string }; Returns: undefined };
       concert_is_past: {
         Args: { concert: Database["public"]["Tables"]["concerts"]["Row"] };
         Returns: boolean;
@@ -233,9 +362,11 @@ export type Database = {
         Args: { p_concert_id: string };
         Returns: number;
       };
+      refresh_all_prestige: { Args: never; Returns: undefined };
     };
     Enums: {
       concert_visibility: "PUBLIC" | "PRIVATE";
+      notification_type: "PROMOTION_OFFER" | "LIKE_RECEIVED" | "CONCERT_UPDATED";
       user_role: "USER" | "ARTIST" | "VENUE" | "COLLABORATOR";
     };
     CompositeTypes: {
@@ -366,6 +497,7 @@ export const Constants = {
   public: {
     Enums: {
       concert_visibility: ["PUBLIC", "PRIVATE"],
+      notification_type: ["PROMOTION_OFFER", "LIKE_RECEIVED", "CONCERT_UPDATED"],
       user_role: ["USER", "ARTIST", "VENUE", "COLLABORATOR"],
     },
   },

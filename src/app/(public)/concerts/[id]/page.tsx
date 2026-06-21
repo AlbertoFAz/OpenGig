@@ -8,11 +8,13 @@ import { CalendarDays, MapPin, Ticket, Pencil } from "lucide-react";
 import { getConcertById } from "@/lib/repositories/concerts";
 import { isConcertInCalendar } from "@/lib/repositories/calendar-entries";
 import { getConcertArtists } from "@/lib/repositories/profiles";
+import { hasLiked } from "@/lib/repositories/likes";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DeleteConcertButton } from "@/components/concert/DeleteConcertButton";
 import { SaveToCalendarButton } from "@/components/concert/SaveToCalendarButton";
+import { LikeButton } from "@/components/concert/LikeButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -36,10 +38,11 @@ export default async function ConcertDetailPage({ params }: PageProps) {
   });
   const savedCount = (savedCountData as number | null) ?? 0;
 
-  // Comprobar si el usuario autenticado ya lo tiene guardado
-  const [alreadySaved, artists] = await Promise.all([
+  // Comprobar si el usuario autenticado ya lo tiene guardado / le ha dado like
+  const [alreadySaved, artists, alreadyLiked] = await Promise.all([
     user ? isConcertInCalendar(concert.id) : Promise.resolve(false),
     getConcertArtists(id),
+    user ? hasLiked(concert.id) : Promise.resolve(false),
   ]);
 
   const dateLabel = format(new Date(concert.date_time), "EEEE d 'de' MMMM yyyy 'a las' HH:mm", {
@@ -132,6 +135,13 @@ export default async function ConcertDetailPage({ params }: PageProps) {
             </a>
           </Button>
         )}
+
+        <LikeButton
+          concertId={concert.id}
+          initialLiked={alreadyLiked}
+          initialCount={concert.likes_count}
+          userId={user?.id ?? null}
+        />
 
         {/* Botón guardar/quitar del calendario privado — para cualquier usuario autenticado */}
         {user && (

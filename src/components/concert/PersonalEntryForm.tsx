@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { personalEntrySchema, type PersonalEntryInput } from "@/lib/schemas/concert";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +26,7 @@ interface PersonalEntryFormProps {
 export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { t } = useLocale();
 
   const form = useForm<PersonalEntryInput>({
     resolver: zodResolver(personalEntrySchema),
@@ -47,12 +49,12 @@ export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
         const body = (await res.json()) as { error: string };
         throw new Error(body.error);
       }
-      toast.success("Entrada añadida al calendario.");
+      toast.success(t.calendar.entryAdded);
       form.reset();
       router.refresh();
       onSuccess?.();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Error inesperado.");
+      toast.error(err instanceof Error ? err.message : t.common.unexpectedError);
     } finally {
       setLoading(false);
     }
@@ -66,9 +68,9 @@ export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Título *</FormLabel>
+              <FormLabel>{t.calendar.entryTitle}</FormLabel>
               <FormControl>
-                <Input placeholder="Ej. Concierto de jazz en el parque" {...field} />
+                <Input placeholder={t.calendar.entryTitlePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,7 +82,7 @@ export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
           name="date_time"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Fecha y hora *</FormLabel>
+              <FormLabel>{t.concert.dateTime}</FormLabel>
               <FormControl>
                 <Input type="datetime-local" {...field} />
               </FormControl>
@@ -94,11 +96,11 @@ export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Notas</FormLabel>
+              <FormLabel>{t.calendar.entryNotes}</FormLabel>
               <FormControl>
                 <textarea
                   className="border-input bg-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[80px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 disabled:opacity-50"
-                  placeholder="Notas opcionales..."
+                  placeholder={t.calendar.entryNotesPlaceholder}
                   maxLength={2000}
                   {...field}
                 />
@@ -109,7 +111,7 @@ export function PersonalEntryForm({ onSuccess }: PersonalEntryFormProps) {
         />
 
         <Button type="submit" disabled={loading}>
-          {loading ? "Guardando…" : "Añadir entrada"}
+          {loading ? t.common.loading : t.calendar.addEntry}
         </Button>
       </form>
     </Form>

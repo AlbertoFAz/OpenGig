@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/schemas/auth";
 import { createClient } from "@/lib/supabase/client";
-import { es } from "@/i18n/es";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 
 export function ForgotPasswordForm() {
+  const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -47,10 +48,10 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="grid gap-2 text-center">
-        <p className="font-medium">{es.auth.checkEmail}</p>
-        <p className="text-sm text-muted-foreground">{es.auth.emailSent}</p>
+        <p className="font-medium">{t.auth.checkEmail}</p>
+        <p className="text-sm text-muted-foreground">{t.auth.emailSent}</p>
         <Link href="/login" className="text-sm font-medium hover:underline">
-          {es.auth.login}
+          {t.auth.login}
         </Link>
       </div>
     );
@@ -64,7 +65,7 @@ export function ForgotPasswordForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{es.auth.email}</FormLabel>
+              <FormLabel>{t.auth.email}</FormLabel>
               <FormControl>
                 <Input type="email" autoComplete="email" placeholder="tu@email.com" {...field} />
               </FormControl>
@@ -74,12 +75,12 @@ export function ForgotPasswordForm() {
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? es.common.loading : es.auth.resetPassword}
+          {loading ? t.common.loading : t.auth.resetPassword}
         </Button>
 
         <p className="text-center text-sm text-muted-foreground">
           <Link href="/login" className="font-medium hover:underline">
-            Volver a {es.auth.login}
+            Volver a {t.auth.login}
           </Link>
         </p>
       </form>
