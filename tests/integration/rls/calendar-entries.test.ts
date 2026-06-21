@@ -25,12 +25,11 @@ let aliceEntryId: string;
 beforeAll(async () => {
   const stamp = Date.now();
 
-  // Crear Alice con rol ARTIST para poder crear conciertos públicos (política RLS fase 4)
+  // Alice con rol USER: puede crear conciertos tanto públicos como privados (nueva política fase 4)
   const { data: aliceData } = await adminClient.auth.admin.createUser({
     email: `alice-cal-${stamp}@test.com`,
     password: "TestPass123!",
     email_confirm: true,
-    user_metadata: { role: "ARTIST" },
   });
   const { data: bobData } = await adminClient.auth.admin.createUser({
     email: `bob-cal-${stamp}@test.com`,

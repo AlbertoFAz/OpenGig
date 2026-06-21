@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: Iniciar sesión
+      - generic [ref=e6]: Accede a tu cuenta para gestionar tus conciertos.
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - generic [ref=e10]: Correo electrónico
+        - textbox "Correo electrónico" [ref=e11]:
+          - /placeholder: tu@email.com
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - generic [ref=e14]: Contraseña
+          - link "¿Olvidaste tu contraseña?" [ref=e15] [cursor=pointer]:
+            - /url: /forgot-password
+        - textbox "Contraseña" [ref=e16]
+      - button "Iniciar sesión" [ref=e17]
+      - button "Continuar con Google" [ref=e18]
+      - paragraph [ref=e19]:
+        - text: ¿No tienes cuenta?
+        - link "Registrarse" [ref=e20] [cursor=pointer]:
+          - /url: /register
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]

@@ -1,0 +1,125 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "OpenGig" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img [ref=e5]
+        - generic [ref=e8]: OpenGig
+      - navigation [ref=e9]:
+        - link "Calendario" [ref=e10] [cursor=pointer]:
+          - /url: /
+      - generic [ref=e11]:
+        - link "Iniciar sesión" [ref=e12] [cursor=pointer]:
+          - /url: /login
+        - link "Registrarse" [ref=e13] [cursor=pointer]:
+          - /url: /register
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "Calendario de conciertos" [level=1] [ref=e17]
+        - paragraph [ref=e18]: Descubre los próximos conciertos en tu ciudad.
+      - generic [ref=e20]:
+        - generic [ref=e21]:
+          - generic [ref=e22]:
+            - button "Hoy" [ref=e23]
+            - button "Anterior" [ref=e24]
+            - button "Siguiente" [ref=e25]
+          - generic [ref=e26]: junio 2026
+          - generic [ref=e27]:
+            - button "Mes" [ref=e28]
+            - button "Semana" [ref=e29]
+            - button "Día" [ref=e30]
+            - button "Agenda" [ref=e31]
+        - table "Month View" [ref=e32]:
+          - row "lun mar mié jue vie sáb dom" [ref=e33]:
+            - columnheader "lun" [ref=e35]
+            - columnheader "mar" [ref=e37]
+            - columnheader "mié" [ref=e39]
+            - columnheader "jue" [ref=e41]
+            - columnheader "vie" [ref=e43]
+            - columnheader "sáb" [ref=e45]
+            - columnheader "dom" [ref=e47]
+          - generic [ref=e50]:
+            - cell "01" [ref=e51]:
+              - button "01" [ref=e52] [cursor=pointer]
+            - cell "02" [ref=e53]:
+              - button "02" [ref=e54] [cursor=pointer]
+            - cell "03" [ref=e55]:
+              - button "03" [ref=e56] [cursor=pointer]
+            - cell "04" [ref=e57]:
+              - button "04" [ref=e58] [cursor=pointer]
+            - cell "05" [ref=e59]:
+              - button "05" [ref=e60] [cursor=pointer]
+            - cell "06" [ref=e61]:
+              - button "06" [ref=e62] [cursor=pointer]
+            - cell "07" [ref=e63]:
+              - button "07" [ref=e64] [cursor=pointer]
+          - generic [ref=e71]:
+            - cell "08" [ref=e72]:
+              - button "08" [ref=e73] [cursor=pointer]
+            - cell "09" [ref=e74]:
+              - button "09" [ref=e75] [cursor=pointer]
+            - cell "10" [ref=e76]:
+              - button "10" [ref=e77] [cursor=pointer]
+            - cell "11" [ref=e78]:
+              - button "11" [ref=e79] [cursor=pointer]
+            - cell "12" [ref=e80]:
+              - button "12" [ref=e81] [cursor=pointer]
+            - cell "13" [ref=e82]:
+              - button "13" [ref=e83] [cursor=pointer]
+            - cell "14" [ref=e84]:
+              - button "14" [ref=e85] [cursor=pointer]
+          - generic [ref=e92]:
+            - cell "15" [ref=e93]:
+              - button "15" [ref=e94] [cursor=pointer]
+            - cell "16" [ref=e95]:
+              - button "16" [ref=e96] [cursor=pointer]
+            - cell "17" [ref=e97]:
+              - button "17" [ref=e98] [cursor=pointer]
+            - cell "18" [ref=e99]:
+              - button "18" [ref=e100] [cursor=pointer]
+            - cell "19" [ref=e101]:
+              - button "19" [ref=e102] [cursor=pointer]
+            - cell "20" [ref=e103]:
+              - button "20" [ref=e104] [cursor=pointer]
+            - cell "21" [ref=e105]:
+              - button "21" [ref=e106] [cursor=pointer]
+          - generic [ref=e113]:
+            - cell "22" [ref=e114]:
+              - button "22" [ref=e115] [cursor=pointer]
+            - cell "23" [ref=e116]:
+              - button "23" [ref=e117] [cursor=pointer]
+            - cell "24" [ref=e118]:
+              - button "24" [ref=e119] [cursor=pointer]
+            - cell "25" [ref=e120]:
+              - button "25" [ref=e121] [cursor=pointer]
+            - cell "26" [ref=e122]:
+              - button "26" [ref=e123] [cursor=pointer]
+            - cell "27" [ref=e124]:
+              - button "27" [ref=e125] [cursor=pointer]
+            - cell "28" [ref=e126]:
+              - button "28" [ref=e127] [cursor=pointer]
+          - generic [ref=e134]:
+            - cell "29" [ref=e135]:
+              - button "29" [ref=e136] [cursor=pointer]
+            - cell "30" [ref=e137]:
+              - button "30" [ref=e138] [cursor=pointer]
+            - cell "01" [ref=e139]:
+              - button "01" [ref=e140] [cursor=pointer]
+            - cell "02" [ref=e141]:
+              - button "02" [ref=e142] [cursor=pointer]
+            - cell "03" [ref=e143]:
+              - button "03" [ref=e144] [cursor=pointer]
+            - cell "04" [ref=e145]:
+              - button "04" [ref=e146] [cursor=pointer]
+            - cell "05" [ref=e147]:
+              - button "05" [ref=e148] [cursor=pointer]
+  - contentinfo [ref=e153]:
+    - generic [ref=e154]:
+      - paragraph [ref=e155]: © 2026 OpenGig
+      - generic [ref=e156]:
+        - link "Política de privacidad" [ref=e157] [cursor=pointer]:
+          - /url: /privacy
+        - link "Aviso legal" [ref=e158] [cursor=pointer]:
+          - /url: /legal
+  - region "Notifications alt+T"

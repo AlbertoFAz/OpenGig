@@ -1,0 +1,76 @@
+[     302ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ http://localhost:3000/_next/image?url=http%3A%2F%2F127.0.0.1%3A54321%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fconcert-images%2F01744670-0be5-4018-a157-540831c5c46f%2Ff8f76f85-fcd6-47bf-a7e0-18748c1a2955.webp&w=3840&q=75:0
+[     374ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[     401ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[     489ms] [WARNING] Image with src "http://127.0.0.1:54321/storage/v1/object/public/concert-images/01744670-0be5-4018-a157-540831c5c46f/f8f76f85-fcd6-47bf-a7e0-18748c1a2955.webp" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  115454ms] [LOG] [Fast Refresh] rebuilding @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  117647ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  119594ms] [ERROR] Failed to load resource: the server responded with a status of 400 (Bad Request) @ http://localhost:3000/_next/image?url=http%3A%2F%2F127.0.0.1%3A54321%2Fstorage%2Fv1%2Fobject%2Fpublic%2Fconcert-images%2F01744670-0be5-4018-a157-540831c5c46f%2Ff8f76f85-fcd6-47bf-a7e0-18748c1a2955.webp&w=3840&q=75:0
+[  119675ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  119730ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  119888ms] [WARNING] Image with src "http://127.0.0.1:54321/storage/v1/object/public/concert-images/01744670-0be5-4018-a157-540831c5c46f/f8f76f85-fcd6-47bf-a7e0-18748c1a2955.webp" has "fill" and a height value of 0. This is likely because the parent element of the image has not been styled to have a set height. @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  160663ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  164030ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  167418ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  170790ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  174166ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  181530ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  188899ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  196282ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  203648ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  211011ms] [ERROR] WebSocket connection to 'ws://localhost:3000/_next/webpack-hmr?id=HgTeRSDvrmSeEQCu-TLiw' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_client_0r5nbpw._.js:13422
+[  219220ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1ybzpk2._.js:2477
+[  223979ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3000/concerts/d0f059d6-b9d6-4ee5-ae8f-1a431229140a:0
+[  224209ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://localhost:3000/_next/static/chunks/node_modules_react-dom_0kla17-._.js:15305
+[  224330ms] Error: ./src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app\globals.css:1:1: Can't resolve 'tw-animate-css' in 'C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app'
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\@tailwindcss\postcss\dist\index.js:10:6918)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:104:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:23)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component]
+
+
+    at Object.getCompilationErrors (file://C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\next\dist\server\dev\hot-reloader-turbopack.js:1186:59)
+    at DevBundlerService.getCompilationError (file://C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\next\dist\server\lib\dev-bundler-service.js:44:55)
+    at DevServer.getCompilationError (file://C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\next\dist\server\dev\next-dev-server.js:720:42)
+    at DevServer.findPageComponents (file://C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\next\dist\server\dev\next-dev-server.js:690:43)
+    at async DevServer.renderErrorToResponseImpl (file://C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\next\dist\server\base-server.js:1753:26)
+[  224313ms] [LOG] [HMR] connected @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1226
+[  224319ms] [ERROR] ./src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app\globals.css:1:1: Can't resolve 'tw-animate-css' in 'C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app'
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\@tailwindcss\postcss\dist\index.js:10:6918)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:104:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:23)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945
+[  224508ms] [ERROR] ./src/app/globals.css
+Error evaluating Node.js code
+CssSyntaxError: tailwindcss: C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app\globals.css:1:1: Can't resolve 'tw-animate-css' in 'C:\Users\larry\Desktop\TFG\Proyecto\opengig\src\app'
+    [at Input.error (turbopack:///[project]/node_modules/postcss/lib/input.js:135:16)]
+    [at Root.error (turbopack:///[project]/node_modules/postcss/lib/node.js:146:32)]
+    [at Object.Once (C:\Users\larry\Desktop\TFG\Proyecto\opengig\node_modules\@tailwindcss\postcss\dist\index.js:10:6918)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:104:5)]
+    [at async LazyResult.runAsync (turbopack:///[project]/node_modules/postcss/lib/lazy-result.js:293:11)]
+    [at async transform (turbopack:///[turbopack-node]/transforms/postcss.ts:70:34)]
+    [at async run (turbopack:///[turbopack-node]/child_process/evaluate.ts:89:23)]
+
+Import trace:
+  Client Component Browser:
+    ./src/app/globals.css [Client Component Browser]
+    ./src/app/layout.tsx [Server Component] @ http://localhost:3000/_next/static/chunks/node_modules_next_dist_1gdrd03._.js:1945

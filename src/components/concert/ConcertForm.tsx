@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Globe, Lock, Info } from "lucide-react";
+import { Globe, Lock } from "lucide-react";
 
 import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
 import type { UserRole } from "@/lib/schemas/profile";
@@ -39,7 +39,9 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   const [loading, setLoading] = useState(false);
   const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
   const isEditing = !!defaultValues?.id;
-  const canPublicize = userRole !== "USER";
+  // ARTIST y VENUE solo crean conciertos públicos.
+  // USER y COLLABORATOR pueden elegir PUBLIC o PRIVATE.
+  const onlyPublic = userRole === "ARTIST" || userRole === "VENUE";
 
   const form = useForm<ConcertInput>({
     resolver: zodResolver(concertSchema),
@@ -51,8 +53,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
       venue_address: defaultValues?.venue_address ?? "",
       ticket_url: defaultValues?.ticket_url ?? "",
       price: defaultValues?.price,
-      // Si el usuario es USER, forzar PRIVATE
-      visibility: canPublicize ? (defaultValues?.visibility ?? "PUBLIC") : "PRIVATE",
+      visibility: defaultValues?.visibility ?? "PUBLIC",
     },
   });
 
@@ -91,7 +92,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         ticket_url: values.ticket_url || undefined,
         price: values.price,
         image_url: image_url || undefined,
-        visibility: canPublicize ? values.visibility : "PRIVATE",
+        visibility: onlyPublic ? "PUBLIC" : values.visibility,
         artistIds,
       };
 
@@ -118,7 +119,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
 
       toast.success(isEditing ? "Concierto actualizado." : "Concierto publicado.");
 
-      if (values.visibility === "PRIVATE" || !canPublicize) {
+      if (!onlyPublic && values.visibility === "PRIVATE") {
         router.push("/me/calendar");
       } else {
         router.push(`/concerts/${concertId}`);
@@ -285,8 +286,8 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           )}
         />
 
-        {/* Selector de artistas — solo para roles que pueden publicar */}
-        {canPublicize && (
+        {/* Selector de artistas — ARTIST y VENUE */}
+        {(userRole === "ARTIST" || userRole === "VENUE" || userRole === "COLLABORATOR") && (
           <div className="grid gap-2">
             <p className="text-sm font-medium">Artistas</p>
             <ArtistSelector value={artistIds} onChange={setArtistIds} />
@@ -296,8 +297,16 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           </div>
         )}
 
-        {/* Toggle de visibilidad */}
-        {canPublicize ? (
+        {/* Toggle de visibilidad — no disponible para ARTIST y VENUE (siempre público) */}
+        {onlyPublic ? (
+          <div className="text-muted-foreground flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
+            <Globe className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              Los artistas y salas publican conciertos en el calendario público. No es posible crear
+              conciertos privados con este rol.
+            </span>
+          </div>
+        ) : (
           <FormField
             control={form.control}
             name="visibility"
@@ -341,14 +350,6 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
               </FormItem>
             )}
           />
-        ) : (
-          <div className="text-muted-foreground flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
-            <Info className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>
-              Los aficionados solo pueden crear eventos privados. Cambia tu rol a Artista, Sala o
-              Colaborador para publicar conciertos en el calendario público.
-            </span>
-          </div>
         )}
 
         <div className="flex gap-3 pt-2">

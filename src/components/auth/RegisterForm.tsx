@@ -7,7 +7,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 
 import { registerSchema, type RegisterInput } from "@/lib/schemas/auth";
-import { ROLE_OPTIONS, ROLE_LABELS, ROLE_DESCRIPTIONS } from "@/lib/schemas/profile";
+import { REGISTERABLE_ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
 import { es } from "@/i18n/es";
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,7 @@ export function RegisterForm() {
               <FormLabel>¿Cómo usarás OpenGig? *</FormLabel>
               <FormControl>
                 <div className="grid gap-2">
-                  {ROLE_OPTIONS.map((role) => (
+                  {REGISTERABLE_ROLES.map((role) => (
                     <label
                       key={role}
                       className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${

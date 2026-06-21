@@ -3,6 +3,11 @@ import { z } from "zod";
 export const ROLE_OPTIONS = ["USER", "ARTIST", "VENUE", "COLLABORATOR"] as const;
 export type UserRole = (typeof ROLE_OPTIONS)[number];
 
+// Roles que el usuario puede elegir al registrarse.
+// COLLABORATOR se obtiene por condiciones específicas, no en el registro.
+export const REGISTERABLE_ROLES = ["USER", "ARTIST", "VENUE"] as const;
+export type RegisterableRole = (typeof REGISTERABLE_ROLES)[number];
+
 export const ROLE_LABELS: Record<UserRole, string> = {
   USER: "Aficionado",
   ARTIST: "Artista",
@@ -10,11 +15,10 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   COLLABORATOR: "Colaborador",
 };
 
-export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
+export const ROLE_DESCRIPTIONS: Record<RegisterableRole, string> = {
   USER: "Sigo conciertos y guardo eventos en mi calendario personal.",
   ARTIST: "Soy músico o grupo y quiero publicar mis conciertos.",
   VENUE: "Gestiono una sala o recinto y publico los eventos que acojo.",
-  COLLABORATOR: "Colaboro con artistas o salas en la organización de eventos.",
 };
 
 export const profileSchema = z.object({
@@ -52,6 +56,6 @@ export const profileSchema = z.object({
 export type ProfileInput = z.infer<typeof profileSchema>;
 
 export const registerRoleSchema = z.object({
-  role: z.enum(ROLE_OPTIONS, { message: "Elige un rol para continuar." }),
+  role: z.enum(REGISTERABLE_ROLES, { message: "Elige un rol para continuar." }),
 });
 export type RegisterRoleInput = z.infer<typeof registerRoleSchema>;

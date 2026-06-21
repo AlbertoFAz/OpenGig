@@ -169,37 +169,41 @@ describe("RLS concert_artists", () => {
   });
 });
 
-describe("RLS concerts: restricción de rol para insertar", () => {
-  it("usuario con rol USER no puede crear concierto público", async () => {
+describe("RLS concerts: restricción de visibilidad por rol", () => {
+  it("usuario con rol USER puede crear concierto público", async () => {
     const stamp = Date.now();
     const { data: userData } = await adminClient.auth.admin.createUser({
-      email: `user-role-${stamp}@test.com`,
+      email: `user-pub-${stamp}@test.com`,
       password: "TestPass123!",
       email_confirm: true,
     });
     const userId = userData.user!.id;
-
     const userClient = createClient<Database>(SUPABASE_URL, ANON_KEY, {
-      auth: { storageKey: `user-role-${stamp}`, persistSession: false },
+      auth: { storageKey: `user-pub-${stamp}`, persistSession: false },
     });
     await userClient.auth.signInWithPassword({
-      email: `user-role-${stamp}@test.com`,
+      email: `user-pub-${stamp}@test.com`,
       password: "TestPass123!",
     });
 
-    const { error } = await userClient.from("concerts").insert({
-      created_by: userId,
-      name: "Concierto no permitido",
-      date_time: tomorrow(),
-      venue_name: "Sala",
-      visibility: "PUBLIC",
-    });
-    expect(error).not.toBeNull();
+    const { data, error } = await userClient
+      .from("concerts")
+      .insert({
+        created_by: userId,
+        name: "Concierto público de aficionado",
+        date_time: tomorrow(),
+        venue_name: "Sala",
+        visibility: "PUBLIC",
+      })
+      .select()
+      .single();
+    expect(error).toBeNull();
 
+    if (data) await adminClient.from("concerts").delete().eq("id", data.id);
     await adminClient.auth.admin.deleteUser(userId);
   });
 
-  it("usuario con rol USER sí puede crear concierto privado", async () => {
+  it("usuario con rol USER puede crear concierto privado", async () => {
     const stamp = Date.now();
     const { data: userData } = await adminClient.auth.admin.createUser({
       email: `user-priv-${stamp}@test.com`,
@@ -207,7 +211,6 @@ describe("RLS concerts: restricción de rol para insertar", () => {
       email_confirm: true,
     });
     const userId = userData.user!.id;
-
     const userClient = createClient<Database>(SUPABASE_URL, ANON_KEY, {
       auth: { storageKey: `user-priv-${stamp}`, persistSession: false },
     });
@@ -229,9 +232,36 @@ describe("RLS concerts: restricción de rol para insertar", () => {
       .single();
     expect(error).toBeNull();
 
-    if (data) {
-      await adminClient.from("concerts").delete().eq("id", data.id);
-    }
+    if (data) await adminClient.from("concerts").delete().eq("id", data.id);
     await adminClient.auth.admin.deleteUser(userId);
+  });
+
+  it("usuario con rol ARTIST NO puede crear concierto privado", async () => {
+    const stamp = Date.now();
+    const { data: artistData } = await adminClient.auth.admin.createUser({
+      email: `artist-priv-${stamp}@test.com`,
+      password: "TestPass123!",
+      email_confirm: true,
+      user_metadata: { role: "ARTIST" },
+    });
+    const artistUserId = artistData.user!.id;
+    const artistUserClient = createClient<Database>(SUPABASE_URL, ANON_KEY, {
+      auth: { storageKey: `artist-priv-${stamp}`, persistSession: false },
+    });
+    await artistUserClient.auth.signInWithPassword({
+      email: `artist-priv-${stamp}@test.com`,
+      password: "TestPass123!",
+    });
+
+    const { error } = await artistUserClient.from("concerts").insert({
+      created_by: artistUserId,
+      name: "Concierto privado no permitido",
+      date_time: tomorrow(),
+      venue_name: "Sala",
+      visibility: "PRIVATE",
+    });
+    expect(error).not.toBeNull();
+
+    await adminClient.auth.admin.deleteUser(artistUserId);
   });
 });

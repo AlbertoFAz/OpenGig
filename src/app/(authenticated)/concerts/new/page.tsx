@@ -24,9 +24,9 @@ export default async function NewConcertPage() {
         <CardHeader>
           <CardTitle>Publicar concierto</CardTitle>
           <CardDescription>
-            {userRole === "USER"
-              ? "Como aficionado, puedes crear conciertos privados en tu calendario personal."
-              : "Completa el formulario para añadir un concierto al calendario público."}
+            {userRole === "ARTIST" || userRole === "VENUE"
+              ? "Los artistas y salas publican siempre en el calendario público."
+              : "Completa el formulario para añadir un concierto."}
           </CardDescription>
         </CardHeader>
         <CardContent>
