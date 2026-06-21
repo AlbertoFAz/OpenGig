@@ -1,0 +1,2 @@
+-- Migración inicial (placeholder).
+-- Las tablas de dominio se crean a partir de 0001_auth_and_profiles.sql.
