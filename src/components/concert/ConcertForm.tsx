@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Globe, Lock } from "lucide-react";
+import { Globe, Lock, Link as LinkIcon, Upload } from "lucide-react";
 
 import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
 import type { UserRole } from "@/lib/schemas/profile";
@@ -38,6 +38,8 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
+  const [imageMode, setImageMode] = useState<"file" | "url">("file");
+  const [imageUrlInput, setImageUrlInput] = useState("");
   const isEditing = !!defaultValues?.id;
   // ARTIST y VENUE solo crean conciertos públicos.
   // USER y COLLABORATOR pueden elegir PUBLIC o PRIVATE.
@@ -64,7 +66,16 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
     try {
       let image_url: string | undefined = defaultValues?.image_url;
 
-      if (values.image instanceof File) {
+      if (imageMode === "url") {
+        if (imageUrlInput.trim()) {
+          try {
+            new URL(imageUrlInput.trim());
+          } catch {
+            throw new Error("La URL de la imagen no es válida.");
+          }
+          image_url = imageUrlInput.trim();
+        }
+      } else if (values.image instanceof File) {
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -250,41 +261,87 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field: { onChange, ref, name, onBlur, disabled } }) => (
-            <FormItem>
-              <FormLabel>Imagen del concierto</FormLabel>
+        <FormItem>
+          <FormLabel>Imagen del concierto</FormLabel>
+
+          {/* Toggle archivo / URL */}
+          <div className="mb-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setImageMode("file")}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-colors ${
+                imageMode === "file"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <Upload className="h-3.5 w-3.5" />
+              Subir archivo
+            </button>
+            <button
+              type="button"
+              onClick={() => setImageMode("url")}
+              className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-colors ${
+                imageMode === "url"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-background text-muted-foreground hover:bg-muted"
+              }`}
+            >
+              <LinkIcon className="h-3.5 w-3.5" />
+              Usar URL
+            </button>
+          </div>
+
+          {imageMode === "file" ? (
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field: { onChange, ref, name, onBlur, disabled } }) => (
+                <>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      ref={ref}
+                      name={name}
+                      onBlur={onBlur}
+                      disabled={disabled}
+                      onChange={(e) => onChange(e.target.files?.[0])}
+                    />
+                  </FormControl>
+                  <FormDescription>JPG, PNG o WebP · máximo 5 MB</FormDescription>
+                  <FormMessage />
+                </>
+              )}
+            />
+          ) : (
+            <>
               <FormControl>
                 <Input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  ref={ref}
-                  name={name}
-                  onBlur={onBlur}
-                  disabled={disabled}
-                  onChange={(e) => onChange(e.target.files?.[0])}
+                  type="url"
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  value={imageUrlInput}
+                  onChange={(e) => setImageUrlInput(e.target.value)}
                 />
               </FormControl>
-              <FormDescription>JPG, PNG o WebP · máximo 5 MB</FormDescription>
-              {defaultValues?.image_url && (
-                <p className="text-muted-foreground text-xs">
-                  Imagen actual:{" "}
-                  <a
-                    href={defaultValues.image_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="underline"
-                  >
-                    ver
-                  </a>
-                </p>
-              )}
-              <FormMessage />
-            </FormItem>
+              <FormDescription>URL pública de una imagen JPG, PNG o WebP.</FormDescription>
+            </>
           )}
-        />
+
+          {defaultValues?.image_url && (
+            <p className="text-muted-foreground text-xs">
+              Imagen actual:{" "}
+              <a
+                href={defaultValues.image_url}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                ver
+              </a>
+            </p>
+          )}
+        </FormItem>
 
         {/* Selector de artistas — ARTIST y VENUE */}
         {(userRole === "ARTIST" || userRole === "VENUE" || userRole === "COLLABORATOR") && (

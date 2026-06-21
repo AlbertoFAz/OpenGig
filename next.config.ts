@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      // Imágenes externas introducidas por URL (cualquier dominio HTTPS)
+      {
+        protocol: "https",
+        hostname: "**",
+      },
     ],
   },
 };
