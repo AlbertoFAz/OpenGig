@@ -34,11 +34,11 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
     resolver: zodResolver(concertSchema),
     defaultValues: {
       name: defaultValues?.name ?? "",
-      description: defaultValues?.description,
+      description: defaultValues?.description ?? "",
       date_time: defaultValues?.date_time ?? "",
       venue_name: defaultValues?.venue_name ?? "",
-      venue_address: defaultValues?.venue_address,
-      ticket_url: defaultValues?.ticket_url,
+      venue_address: defaultValues?.venue_address ?? "",
+      ticket_url: defaultValues?.ticket_url ?? "",
       price: defaultValues?.price,
     },
   });
@@ -72,13 +72,13 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
 
       const payload = {
         name: values.name,
-        description: values.description,
+        description: values.description || undefined,
         date_time: new Date(values.date_time).toISOString(),
         venue_name: values.venue_name,
-        venue_address: values.venue_address,
-        ticket_url: values.ticket_url || null,
-        price: values.price ?? null,
-        image_url: image_url ?? null,
+        venue_address: values.venue_address || undefined,
+        ticket_url: values.ticket_url || undefined,
+        price: values.price,
+        image_url: image_url || undefined,
       };
 
       let concertId: string;

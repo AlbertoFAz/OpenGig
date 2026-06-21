@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code (Anthropic) — estado y configuración personal
+.claude/
+AGENTS.md
+CLAUDE.md
+SECURITY.md
+Planificacion_fases_agente.md
+
+# Borradores y notas locales que el agente pueda generar
+*.local.md
+drafts/
+.scratchpad/

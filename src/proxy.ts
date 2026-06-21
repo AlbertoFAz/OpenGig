@@ -4,7 +4,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 // Rutas que requieren sesión activa
 const PROTECTED_PATHS = ["/concerts/new", "/concerts/", "/me/"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
   const pathname = request.nextUrl.pathname;
 
