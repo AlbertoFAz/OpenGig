@@ -4,9 +4,11 @@ import { useState, useCallback } from "react";
 import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es as dateFnsEs } from "date-fns/locale";
+import { useRouter } from "next/navigation";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { es } from "@/i18n/es";
+import type { Concert } from "@/lib/repositories/concerts";
 
 const localizer = dateFnsLocalizer({
   format,
@@ -27,24 +29,25 @@ const MESSAGES = {
   showMore: (total: number) => `+${total} más`,
 };
 
-interface CalendarEvent {
-  id: string;
-  title: string;
-  start: Date;
-  end: Date;
-  resource?: unknown;
-}
-
 interface PublicCalendarProps {
-  events?: CalendarEvent[];
+  concerts?: Concert[];
 }
 
-export function PublicCalendar({ events = [] }: PublicCalendarProps) {
+export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
+  const router = useRouter();
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
 
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), []);
   const onView = useCallback((newView: View) => setView(newView), []);
+
+  const events = concerts.map((c) => ({
+    id: c.id,
+    title: c.name,
+    start: new Date(c.date_time),
+    end: new Date(new Date(c.date_time).getTime() + 2 * 60 * 60 * 1000),
+    resource: c,
+  }));
 
   return (
     <div className="h-[calc(100vh-10rem)] min-h-[500px]">
@@ -55,6 +58,7 @@ export function PublicCalendar({ events = [] }: PublicCalendarProps) {
         date={date}
         onNavigate={onNavigate}
         onView={onView}
+        onSelectEvent={(event) => router.push(`/concerts/${event.id}`)}
         culture="es"
         messages={MESSAGES}
         className="rounded-lg border bg-background p-2"
