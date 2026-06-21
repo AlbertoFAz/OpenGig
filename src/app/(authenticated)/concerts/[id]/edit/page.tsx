@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getConcertById } from "@/lib/repositories/concerts";
+import { getConcertArtists } from "@/lib/repositories/profiles";
 import { createClient } from "@/lib/supabase/server";
 import { ConcertForm } from "@/components/concert/ConcertForm";
 import type { ConcertInput } from "@/lib/schemas/concert";
@@ -23,7 +24,18 @@ export default async function EditConcertPage({ params }: PageProps) {
 
   if (!user || user.id !== concert.created_by) redirect("/");
 
-  const defaultValues: Partial<ConcertInput> & { id: string; image_url?: string } = {
+  const [artists, profileRow] = await Promise.all([
+    getConcertArtists(id),
+    supabase.from("profiles").select("role").eq("id", user.id).single(),
+  ]);
+
+  const userRole = profileRow.data?.role ?? "USER";
+
+  const defaultValues: Partial<ConcertInput> & {
+    id: string;
+    image_url?: string;
+    artistIds?: string[];
+  } = {
     id: concert.id,
     name: concert.name,
     description: concert.description ?? undefined,
@@ -33,6 +45,7 @@ export default async function EditConcertPage({ params }: PageProps) {
     ticket_url: concert.ticket_url ?? undefined,
     price: concert.price !== null ? Number(concert.price) : undefined,
     visibility: concert.visibility ?? "PUBLIC",
+    artistIds: artists.map((a) => a.id),
     ...(concert.image_url ? { image_url: concert.image_url } : {}),
   };
 
@@ -44,7 +57,7 @@ export default async function EditConcertPage({ params }: PageProps) {
           <CardDescription>Modifica los datos del concierto.</CardDescription>
         </CardHeader>
         <CardContent>
-          <ConcertForm defaultValues={defaultValues} />
+          <ConcertForm defaultValues={defaultValues} userRole={userRole} />
         </CardContent>
       </Card>
     </div>

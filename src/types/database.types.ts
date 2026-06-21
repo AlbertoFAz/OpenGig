@@ -76,6 +76,36 @@ export type Database = {
           },
         ];
       };
+      concert_artists: {
+        Row: {
+          artist_profile_id: string;
+          concert_id: string;
+        };
+        Insert: {
+          artist_profile_id: string;
+          concert_id: string;
+        };
+        Update: {
+          artist_profile_id?: string;
+          concert_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "concert_artists_artist_profile_id_fkey";
+            columns: ["artist_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "concert_artists_concert_id_fkey";
+            columns: ["concert_id"];
+            isOneToOne: false;
+            referencedRelation: "concerts";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       concerts: {
         Row: {
           created_at: string;
@@ -89,6 +119,7 @@ export type Database = {
           ticket_url: string | null;
           updated_at: string;
           venue_address: string;
+          venue_id: string | null;
           venue_name: string;
           visibility: Database["public"]["Enums"]["concert_visibility"];
         };
@@ -104,6 +135,7 @@ export type Database = {
           ticket_url?: string | null;
           updated_at?: string;
           venue_address?: string;
+          venue_id?: string | null;
           venue_name: string;
           visibility?: Database["public"]["Enums"]["concert_visibility"];
         };
@@ -119,6 +151,7 @@ export type Database = {
           ticket_url?: string | null;
           updated_at?: string;
           venue_address?: string;
+          venue_id?: string | null;
           venue_name?: string;
           visibility?: Database["public"]["Enums"]["concert_visibility"];
         };
@@ -130,35 +163,60 @@ export type Database = {
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "concerts_venue_id_fkey";
+            columns: ["venue_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
         ];
       };
       profiles: {
         Row: {
+          biography: string | null;
+          collaborator_scope: string | null;
           created_at: string;
           display_name: string;
           id: string;
+          image_url: string | null;
           prestige: number;
           role: Database["public"]["Enums"]["user_role"];
+          social_links: Json;
           updated_at: string;
           username: string;
+          venue_address: string | null;
+          venue_capacity: number | null;
         };
         Insert: {
+          biography?: string | null;
+          collaborator_scope?: string | null;
           created_at?: string;
           display_name?: string;
           id: string;
+          image_url?: string | null;
           prestige?: number;
           role?: Database["public"]["Enums"]["user_role"];
+          social_links?: Json;
           updated_at?: string;
           username: string;
+          venue_address?: string | null;
+          venue_capacity?: number | null;
         };
         Update: {
+          biography?: string | null;
+          collaborator_scope?: string | null;
           created_at?: string;
           display_name?: string;
           id?: string;
+          image_url?: string | null;
           prestige?: number;
           role?: Database["public"]["Enums"]["user_role"];
+          social_links?: Json;
           updated_at?: string;
           username?: string;
+          venue_address?: string | null;
+          venue_capacity?: number | null;
         };
         Relationships: [];
       };
@@ -178,7 +236,7 @@ export type Database = {
     };
     Enums: {
       concert_visibility: "PUBLIC" | "PRIVATE";
-      user_role: "USER";
+      user_role: "USER" | "ARTIST" | "VENUE" | "COLLABORATOR";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -308,7 +366,7 @@ export const Constants = {
   public: {
     Enums: {
       concert_visibility: ["PUBLIC", "PRIVATE"],
-      user_role: ["USER"],
+      user_role: ["USER", "ARTIST", "VENUE", "COLLABORATOR"],
     },
   },
 } as const;

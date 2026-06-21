@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { concertServerSchema } from "@/lib/schemas/concert";
+
+const bodySchema = concertServerSchema.extend({
+  artistIds: z.array(z.string().uuid()).optional(),
+});
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -10,7 +15,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   const body: unknown = await request.json();
-  const parsed = concertServerSchema.safeParse(body);
+  const parsed = bodySchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: parsed.error.issues[0]?.message ?? "Datos inválidos" },
@@ -18,8 +23,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const { image_url, ticket_url, price, description, venue_address, visibility, ...required } =
-    parsed.data;
+  const {
+    image_url,
+    ticket_url,
+    price,
+    description,
+    venue_address,
+    visibility,
+    artistIds,
+    ...required
+  } = parsed.data;
 
   const { data, error } = await supabase
     .from("concerts")
@@ -40,6 +53,13 @@ export async function POST(request: Request) {
 
   // Auto-añadir el concierto al calendario del creador
   await supabase.from("calendar_entries").insert({ user_id: user.id, concert_id: data.id });
+
+  // Vincular artistas
+  if (artistIds && artistIds.length > 0) {
+    await supabase
+      .from("concert_artists")
+      .insert(artistIds.map((artistId) => ({ concert_id: data.id, artist_profile_id: artistId })));
+  }
 
   return NextResponse.json({ id: data.id }, { status: 201 });
 }

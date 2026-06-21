@@ -25,10 +25,12 @@ beforeAll(async () => {
   const ownerEmail = `owner-concerts-${stamp}@test.com`;
   const otherEmail = `other-concerts-${stamp}@test.com`;
 
+  // Crear owner con rol ARTIST para poder crear conciertos públicos (política RLS fase 4)
   const { data: ownerData } = await adminClient.auth.admin.createUser({
     email: ownerEmail,
     password: "TestPass123!",
     email_confirm: true,
+    user_metadata: { role: "ARTIST" },
   });
   const { data: otherData } = await adminClient.auth.admin.createUser({
     email: otherEmail,

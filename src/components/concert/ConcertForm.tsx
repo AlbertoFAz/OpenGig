@@ -5,10 +5,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Globe, Lock } from "lucide-react";
+import { Globe, Lock, Info } from "lucide-react";
 
 import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
+import type { UserRole } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
+import { ArtistSelector } from "@/components/concert/ArtistSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,13 +25,21 @@ import {
 
 interface ConcertFormProps {
   /** Si se pasa, el formulario está en modo edición */
-  defaultValues?: Partial<ConcertInput> & { id?: string; image_url?: string };
+  defaultValues?: Partial<ConcertInput> & {
+    id?: string;
+    image_url?: string;
+    /** Artistas vinculados al concierto (solo en edición) */
+    artistIds?: string[];
+  };
+  userRole?: UserRole;
 }
 
-export function ConcertForm({ defaultValues }: ConcertFormProps) {
+export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
   const isEditing = !!defaultValues?.id;
+  const canPublicize = userRole !== "USER";
 
   const form = useForm<ConcertInput>({
     resolver: zodResolver(concertSchema),
@@ -41,7 +51,8 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
       venue_address: defaultValues?.venue_address ?? "",
       ticket_url: defaultValues?.ticket_url ?? "",
       price: defaultValues?.price,
-      visibility: defaultValues?.visibility ?? "PUBLIC",
+      // Si el usuario es USER, forzar PRIVATE
+      visibility: canPublicize ? (defaultValues?.visibility ?? "PUBLIC") : "PRIVATE",
     },
   });
 
@@ -52,7 +63,6 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
     try {
       let image_url: string | undefined = defaultValues?.image_url;
 
-      // Subir imagen si se seleccionó una nueva
       if (values.image instanceof File) {
         const {
           data: { user },
@@ -81,7 +91,8 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
         ticket_url: values.ticket_url || undefined,
         price: values.price,
         image_url: image_url || undefined,
-        visibility: values.visibility,
+        visibility: canPublicize ? values.visibility : "PRIVATE",
+        artistIds,
       };
 
       let concertId: string;
@@ -107,8 +118,7 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
 
       toast.success(isEditing ? "Concierto actualizado." : "Concierto publicado.");
 
-      // Los conciertos privados van al calendario privado
-      if (values.visibility === "PRIVATE") {
+      if (values.visibility === "PRIVATE" || !canPublicize) {
         router.push("/me/calendar");
       } else {
         router.push(`/concerts/${concertId}`);
@@ -275,50 +285,71 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
           )}
         />
 
+        {/* Selector de artistas — solo para roles que pueden publicar */}
+        {canPublicize && (
+          <div className="grid gap-2">
+            <p className="text-sm font-medium">Artistas</p>
+            <ArtistSelector value={artistIds} onChange={setArtistIds} />
+            <p className="text-muted-foreground text-xs">
+              Vincula los artistas registrados que actúan en este concierto.
+            </p>
+          </div>
+        )}
+
         {/* Toggle de visibilidad */}
-        <FormField
-          control={form.control}
-          name="visibility"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Visibilidad</FormLabel>
-              <FormControl>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => field.onChange("PUBLIC")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
-                      field.value === "PUBLIC"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-muted-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Globe className="h-4 w-4" />
-                    Público
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => field.onChange("PRIVATE")}
-                    className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
-                      field.value === "PRIVATE"
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-muted-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <Lock className="h-4 w-4" />
-                    Privado
-                  </button>
-                </div>
-              </FormControl>
-              <FormDescription>
-                {field.value === "PUBLIC"
-                  ? "El concierto aparecerá en el calendario público."
-                  : "Solo tú podrás verlo en tu calendario privado."}
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {canPublicize ? (
+          <FormField
+            control={form.control}
+            name="visibility"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Visibilidad</FormLabel>
+                <FormControl>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("PUBLIC")}
+                      className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                        field.value === "PUBLIC"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Globe className="h-4 w-4" />
+                      Público
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => field.onChange("PRIVATE")}
+                      className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                        field.value === "PRIVATE"
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground hover:bg-muted"
+                      }`}
+                    >
+                      <Lock className="h-4 w-4" />
+                      Privado
+                    </button>
+                  </div>
+                </FormControl>
+                <FormDescription>
+                  {field.value === "PUBLIC"
+                    ? "El concierto aparecerá en el calendario público."
+                    : "Solo tú podrás verlo en tu calendario privado."}
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : (
+          <div className="text-muted-foreground flex items-start gap-2 rounded-md border px-3 py-2 text-sm">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>
+              Los aficionados solo pueden crear eventos privados. Cambia tu rol a Artista, Sala o
+              Colaborador para publicar conciertos en el calendario público.
+            </span>
+          </div>
+        )}
 
         <div className="flex gap-3 pt-2">
           <Button type="submit" disabled={loading} className="flex-1">
