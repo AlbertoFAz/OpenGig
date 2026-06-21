@@ -7,7 +7,7 @@ export type ConcertUpdate = Database["public"]["Tables"]["concerts"]["Update"];
 
 export type Result<T, E = string> = { ok: true; data: T } | { ok: false; error: E };
 
-/** Conciertos de los próximos N días para el calendario público */
+/** Conciertos públicos de los próximos N días para el calendario público */
 export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   const supabase = await createClient();
   const from = new Date().toISOString();
@@ -16,6 +16,7 @@ export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   const { data, error } = await supabase
     .from("concerts")
     .select("*")
+    .eq("visibility", "PUBLIC")
     .gte("date_time", from)
     .lte("date_time", to)
     .order("date_time", { ascending: true });

@@ -33,6 +33,7 @@ export async function PATCH(request: Request, ctx: RouteContext) {
     ...("image_url" in parsed.data && { image_url: parsed.data.image_url ?? null }),
     ...("ticket_url" in parsed.data && { ticket_url: parsed.data.ticket_url ?? null }),
     ...("price" in parsed.data && { price: parsed.data.price ?? null }),
+    ...(parsed.data.visibility !== undefined && { visibility: parsed.data.visibility }),
   };
 
   const { data, error } = await supabase

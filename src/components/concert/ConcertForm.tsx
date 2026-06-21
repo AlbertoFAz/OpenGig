@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Globe, Lock } from "lucide-react";
 
 import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
 import { createClient } from "@/lib/supabase/client";
@@ -40,6 +41,7 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
       venue_address: defaultValues?.venue_address ?? "",
       ticket_url: defaultValues?.ticket_url ?? "",
       price: defaultValues?.price,
+      visibility: defaultValues?.visibility ?? "PUBLIC",
     },
   });
 
@@ -79,6 +81,7 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
         ticket_url: values.ticket_url || undefined,
         price: values.price,
         image_url: image_url || undefined,
+        visibility: values.visibility,
       };
 
       let concertId: string;
@@ -103,7 +106,13 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
       }
 
       toast.success(isEditing ? "Concierto actualizado." : "Concierto publicado.");
-      router.push(`/concerts/${concertId}`);
+
+      // Los conciertos privados van al calendario privado
+      if (values.visibility === "PRIVATE") {
+        router.push("/me/calendar");
+      } else {
+        router.push(`/concerts/${concertId}`);
+      }
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error inesperado.");
@@ -261,6 +270,51 @@ export function ConcertForm({ defaultValues }: ConcertFormProps) {
                   </a>
                 </p>
               )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Toggle de visibilidad */}
+        <FormField
+          control={form.control}
+          name="visibility"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Visibilidad</FormLabel>
+              <FormControl>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => field.onChange("PUBLIC")}
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                      field.value === "PUBLIC"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Globe className="h-4 w-4" />
+                    Público
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => field.onChange("PRIVATE")}
+                    className={`flex flex-1 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm transition-colors ${
+                      field.value === "PRIVATE"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground hover:bg-muted"
+                    }`}
+                  >
+                    <Lock className="h-4 w-4" />
+                    Privado
+                  </button>
+                </div>
+              </FormControl>
+              <FormDescription>
+                {field.value === "PUBLIC"
+                  ? "El concierto aparecerá en el calendario público."
+                  : "Solo tú podrás verlo en tu calendario privado."}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

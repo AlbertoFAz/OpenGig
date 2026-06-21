@@ -6,10 +6,12 @@ import { es } from "date-fns/locale";
 import { CalendarDays, MapPin, Ticket, Pencil } from "lucide-react";
 
 import { getConcertById } from "@/lib/repositories/concerts";
+import { isConcertInCalendar } from "@/lib/repositories/calendar-entries";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DeleteConcertButton } from "@/components/concert/DeleteConcertButton";
+import { SaveToCalendarButton } from "@/components/concert/SaveToCalendarButton";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -26,6 +28,16 @@ export default async function ConcertDetailPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
   const isOwner = user?.id === concert.created_by;
+
+  // Contar cuántos usuarios han guardado este concierto
+  const { data: savedCountData } = await supabase.rpc("get_concert_saved_count", {
+    p_concert_id: concert.id,
+  });
+  const savedCount = (savedCountData as number | null) ?? 0;
+
+  // Comprobar si el usuario autenticado ya lo tiene guardado
+  const alreadySaved = user ? await isConcertInCalendar(concert.id) : false;
+
   const dateLabel = format(new Date(concert.date_time), "EEEE d 'de' MMMM yyyy 'a las' HH:mm", {
     locale: es,
   });
@@ -98,6 +110,16 @@ export default async function ConcertDetailPage({ params }: PageProps) {
             </a>
           </Button>
         )}
+
+        {/* Botón guardar/quitar del calendario privado — para cualquier usuario autenticado */}
+        {user && (
+          <SaveToCalendarButton
+            concertId={concert.id}
+            initialSaved={alreadySaved}
+            savedCount={savedCount}
+          />
+        )}
+
         {isOwner && (
           <>
             <Button variant="outline" asChild>

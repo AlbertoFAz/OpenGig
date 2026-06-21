@@ -32,6 +32,7 @@ export default async function EditConcertPage({ params }: PageProps) {
     venue_address: concert.venue_address ?? undefined,
     ticket_url: concert.ticket_url ?? undefined,
     price: concert.price !== null ? Number(concert.price) : undefined,
+    visibility: concert.visibility ?? "PUBLIC",
     ...(concert.image_url ? { image_url: concert.image_url } : {}),
   };
 

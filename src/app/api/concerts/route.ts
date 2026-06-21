@@ -18,7 +18,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const { image_url, ticket_url, price, description, venue_address, ...required } = parsed.data;
+  const { image_url, ticket_url, price, description, venue_address, visibility, ...required } =
+    parsed.data;
 
   const { data, error } = await supabase
     .from("concerts")
@@ -30,10 +31,15 @@ export async function POST(request: Request) {
       image_url: image_url ?? null,
       ticket_url: ticket_url ?? null,
       price: price ?? null,
+      visibility: visibility ?? "PUBLIC",
     })
     .select()
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Auto-añadir el concierto al calendario del creador
+  await supabase.from("calendar_entries").insert({ user_id: user.id, concert_id: data.id });
+
   return NextResponse.json({ id: data.id }, { status: 201 });
 }

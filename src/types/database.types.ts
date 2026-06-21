@@ -1,4 +1,4 @@
-﻿export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   graphql_public: {
@@ -28,6 +28,54 @@ export type Database = {
   };
   public: {
     Tables: {
+      calendar_entries: {
+        Row: {
+          concert_id: string | null;
+          created_at: string;
+          date_time: string | null;
+          description: string | null;
+          id: string;
+          title: string | null;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          concert_id?: string | null;
+          created_at?: string;
+          date_time?: string | null;
+          description?: string | null;
+          id?: string;
+          title?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          concert_id?: string | null;
+          created_at?: string;
+          date_time?: string | null;
+          description?: string | null;
+          id?: string;
+          title?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "calendar_entries_concert_id_fkey";
+            columns: ["concert_id"];
+            isOneToOne: false;
+            referencedRelation: "concerts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "calendar_entries_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       concerts: {
         Row: {
           created_at: string;
@@ -42,6 +90,7 @@ export type Database = {
           updated_at: string;
           venue_address: string;
           venue_name: string;
+          visibility: Database["public"]["Enums"]["concert_visibility"];
         };
         Insert: {
           created_at?: string;
@@ -56,6 +105,7 @@ export type Database = {
           updated_at?: string;
           venue_address?: string;
           venue_name: string;
+          visibility?: Database["public"]["Enums"]["concert_visibility"];
         };
         Update: {
           created_at?: string;
@@ -70,6 +120,7 @@ export type Database = {
           updated_at?: string;
           venue_address?: string;
           venue_name?: string;
+          visibility?: Database["public"]["Enums"]["concert_visibility"];
         };
         Relationships: [
           {
@@ -120,8 +171,13 @@ export type Database = {
         Args: { concert: Database["public"]["Tables"]["concerts"]["Row"] };
         Returns: boolean;
       };
+      get_concert_saved_count: {
+        Args: { p_concert_id: string };
+        Returns: number;
+      };
     };
     Enums: {
+      concert_visibility: "PUBLIC" | "PRIVATE";
       user_role: "USER";
     };
     CompositeTypes: {
@@ -251,6 +307,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      concert_visibility: ["PUBLIC", "PRIVATE"],
       user_role: ["USER"],
     },
   },
