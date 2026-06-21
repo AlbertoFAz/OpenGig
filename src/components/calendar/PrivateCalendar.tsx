@@ -53,10 +53,13 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
   const onView = useCallback((newView: View) => setView(newView), []);
 
   const events: CalendarEvent[] = entries.map((entry) => {
-    // Si está vinculada a un concierto, la fecha viene del concierto
     const dt = entry.concerts?.date_time ?? entry.date_time;
     const start = dt ? new Date(dt) : new Date();
-    const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+    // Limitar duración a 90 min sin cruzar medianoche
+    const candidate = new Date(start.getTime() + 90 * 60 * 1000);
+    const endOfDay = new Date(start);
+    endOfDay.setHours(23, 59, 59, 0);
+    const end = candidate > endOfDay ? endOfDay : candidate;
     const title = entry.concerts?.name ?? entry.title ?? "Entrada personal";
 
     return { id: entry.id, title, start, end, resource: entry };

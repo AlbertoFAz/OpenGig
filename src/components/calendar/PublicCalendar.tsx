@@ -41,13 +41,16 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), []);
   const onView = useCallback((newView: View) => setView(newView), []);
 
-  const events = concerts.map((c) => ({
-    id: c.id,
-    title: c.name,
-    start: new Date(c.date_time),
-    end: new Date(new Date(c.date_time).getTime() + 2 * 60 * 60 * 1000),
-    resource: c,
-  }));
+  const events = concerts.map((c) => {
+    const start = new Date(c.date_time);
+    // Limitar la duración visual a 90 min pero nunca cruzar medianoche,
+    // para evitar que react-big-calendar trate el evento como multi-día.
+    const candidate = new Date(start.getTime() + 90 * 60 * 1000);
+    const endOfDay = new Date(start);
+    endOfDay.setHours(23, 59, 59, 0);
+    const end = candidate > endOfDay ? endOfDay : candidate;
+    return { id: c.id, title: c.name, start, end, resource: c };
+  });
 
   return (
     <div className="h-[calc(100vh-10rem)] min-h-[500px]">
