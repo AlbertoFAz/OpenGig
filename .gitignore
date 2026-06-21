@@ -51,3 +51,6 @@ Planificacion_fases_agente.md
 *.local.md
 drafts/
 .scratchpad/
+
+# Playwright MCP (capturas y logs de automatización local)
+.playwright-mcp/
