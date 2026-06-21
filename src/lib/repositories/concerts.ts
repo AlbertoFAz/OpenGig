@@ -25,6 +25,26 @@ export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   return data ?? [];
 }
 
+/** Top 10 conciertos de hoy ordenados por score (likes + prestige) */
+export async function getFeaturedTodayConcerts(): Promise<
+  (Concert & { profiles: { display_name: string; prestige: number } | null })[]
+> {
+  const supabase = await createClient();
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const { data } = await supabase
+    .from("concerts")
+    .select("*, profiles!created_by(display_name, prestige)")
+    .eq("visibility", "PUBLIC")
+    .gte("date_time", startOfDay.toISOString())
+    .lte("date_time", endOfDay.toISOString());
+
+  return data ?? [];
+}
+
 /** Detalle de un concierto por id */
 export async function getConcertById(
   id: string

@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
 import { Music2 } from "lucide-react";
 import { UserMenu } from "./UserMenu";
+import { NotificationBellWrapper } from "./NotificationBellWrapper";
 
 interface HeaderProps {
   user: User | null;
@@ -38,7 +40,14 @@ export function Header({ user }: HeaderProps) {
           )}
         </nav>
 
-        <UserMenu user={user} />
+        <div className="flex items-center gap-1">
+          {user && (
+            <Suspense fallback={null}>
+              <NotificationBellWrapper userId={user.id} />
+            </Suspense>
+          )}
+          <UserMenu user={user} />
+        </div>
       </div>
     </header>
   );
