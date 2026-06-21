@@ -40,9 +40,10 @@ interface CalendarEvent {
 
 interface PrivateCalendarProps {
   entries?: CalendarEntryWithConcert[];
+  userId?: string;
 }
 
-export function PrivateCalendar({ entries = [] }: PrivateCalendarProps) {
+export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) {
   const router = useRouter();
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
@@ -61,21 +62,31 @@ export function PrivateCalendar({ entries = [] }: PrivateCalendarProps) {
     return { id: entry.id, title, start, end, resource: entry };
   });
 
-  // Azul para entradas vinculadas a concierto, naranja para personales
+  // Verde = concierto propio, azul = concierto guardado ajeno, naranja = entrada personal
   const eventPropGetter = (event: CalendarEvent) => {
-    const isConcertEntry = event.resource.concert_id !== null;
-    return {
-      style: {
-        backgroundColor: isConcertEntry ? "#3b82f6" : "#f97316",
-        borderColor: isConcertEntry ? "#2563eb" : "#ea580c",
-        color: "#fff",
-      },
-    };
+    const { concert_id, concerts } = event.resource;
+    let bg: string;
+    let border: string;
+    if (!concert_id) {
+      bg = "#f97316";
+      border = "#ea580c"; // naranja — entrada personal
+    } else if (concerts?.created_by === userId) {
+      bg = "#22c55e";
+      border = "#16a34a"; // verde — concierto propio
+    } else {
+      bg = "#3b82f6";
+      border = "#2563eb"; // azul — concierto guardado
+    }
+    return { style: { backgroundColor: bg, borderColor: border, color: "#fff" } };
   };
 
   return (
     <>
-      <div className="mb-4 flex gap-4 text-sm">
+      <div className="mb-4 flex flex-wrap gap-4 text-sm">
+        <span className="flex items-center gap-1.5">
+          <span className="inline-block h-3 w-3 rounded-full bg-green-500" />
+          Mis conciertos
+        </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block h-3 w-3 rounded-full bg-blue-500" />
           Conciertos guardados

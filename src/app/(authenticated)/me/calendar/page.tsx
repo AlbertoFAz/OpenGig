@@ -23,7 +23,7 @@ export default async function MyCalendarPage() {
         <NewPersonalEntryDialog />
       </div>
 
-      <PrivateCalendar entries={entries} />
+      <PrivateCalendar entries={entries} userId={user.id} />
     </div>
   );
 }

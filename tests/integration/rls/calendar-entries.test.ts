@@ -204,4 +204,30 @@ describe("calendar_entries - RLS", () => {
     expect(error).toBeNull();
     expect(data).toBeGreaterThanOrEqual(1); // Bob guardó el concierto público
   });
+
+  it("el creador puede guardar su propio concierto (auto-add al crear)", async () => {
+    // Simula lo que hace la API route al crear el concierto
+    const { data, error } = await aliceClient
+      .from("calendar_entries")
+      .insert({ user_id: aliceId, concert_id: publicConcertId })
+      .select()
+      .single();
+    expect(error).toBeNull();
+    expect(data?.concert_id).toBe(publicConcertId);
+    // Limpieza: eliminar la entrada de Alice para no romper otros tests
+    await aliceClient.from("calendar_entries").delete().eq("id", data!.id);
+  });
+
+  it("el join con concerts devuelve created_by (necesario para distinguir colores)", async () => {
+    // Bob consulta sus entradas con el join al concierto
+    const { data, error } = await bobClient
+      .from("calendar_entries")
+      .select("concert_id, concerts(id, created_by)")
+      .eq("concert_id", publicConcertId)
+      .single();
+    expect(error).toBeNull();
+    // El concierto fue creado por Alice, no por Bob
+    expect(data?.concerts?.created_by).toBe(aliceId);
+    expect(data?.concerts?.created_by).not.toBe(bobId);
+  });
 });

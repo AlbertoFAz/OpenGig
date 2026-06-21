@@ -111,8 +111,8 @@ export default async function ConcertDetailPage({ params }: PageProps) {
           </Button>
         )}
 
-        {/* Botón guardar/quitar del calendario privado — solo para usuarios autenticados */}
-        {user && !isOwner && (
+        {/* Botón guardar/quitar del calendario privado — para cualquier usuario autenticado */}
+        {user && (
           <SaveToCalendarButton
             concertId={concert.id}
             initialSaved={alreadySaved}

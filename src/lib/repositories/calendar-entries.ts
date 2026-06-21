@@ -10,7 +10,7 @@ export type Concert = Database["public"]["Tables"]["concerts"]["Row"];
 export type CalendarEntryWithConcert = CalendarEntry & {
   concerts: Pick<
     Concert,
-    "id" | "name" | "date_time" | "venue_name" | "image_url" | "visibility"
+    "id" | "name" | "date_time" | "venue_name" | "image_url" | "visibility" | "created_by"
   > | null;
 };
 
@@ -19,7 +19,7 @@ export async function getUserCalendarEntries(): Promise<CalendarEntryWithConcert
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("calendar_entries")
-    .select("*, concerts(id, name, date_time, venue_name, image_url, visibility)")
+    .select("*, concerts(id, name, date_time, venue_name, image_url, visibility, created_by)")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);

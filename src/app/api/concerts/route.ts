@@ -37,5 +37,9 @@ export async function POST(request: Request) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Auto-añadir el concierto al calendario del creador
+  await supabase.from("calendar_entries").insert({ user_id: user.id, concert_id: data.id });
+
   return NextResponse.json({ id: data.id }, { status: 201 });
 }
