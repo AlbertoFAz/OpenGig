@@ -138,6 +138,18 @@ export const en = {
     newEntry: "New entry",
     newEntryTitle: "New personal entry",
   },
+  export: {
+    sectionTitle: "Add to your calendar",
+    downloadIcs: "Download .ics",
+    openGoogleCalendar: "Open in Google Calendar",
+    subscribeUrl: "Subscription URL",
+    subscribeCopied: "URL copied to clipboard.",
+    subscribeHint: "Paste this URL into Google Calendar or Apple Calendar to keep it in sync.",
+    regenerateToken: "Revoke and regenerate token",
+    regenerating: "Regenerating…",
+    tokenRegenerated: "Token regenerated. Update your subscription.",
+    subscribeCalendar: "Subscribe from my calendar app",
+  },
   common: {
     loading: "Loading…",
     error: "An unexpected error occurred.",

@@ -249,6 +249,7 @@ export type Database = {
       profiles: {
         Row: {
           biography: string | null;
+          calendar_subscription_token: string;
           collaborator_scope: string | null;
           created_at: string;
           display_name: string;
@@ -264,6 +265,7 @@ export type Database = {
         };
         Insert: {
           biography?: string | null;
+          calendar_subscription_token?: string;
           collaborator_scope?: string | null;
           created_at?: string;
           display_name?: string;
@@ -279,6 +281,7 @@ export type Database = {
         };
         Update: {
           biography?: string | null;
+          calendar_subscription_token?: string;
           collaborator_scope?: string | null;
           created_at?: string;
           display_name?: string;

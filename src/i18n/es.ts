@@ -139,6 +139,19 @@ export const es = {
     newEntry: "Nueva entrada",
     newEntryTitle: "Nueva entrada personal",
   },
+  export: {
+    sectionTitle: "Añadir a tu calendario",
+    downloadIcs: "Descargar .ics",
+    openGoogleCalendar: "Abrir en Google Calendar",
+    subscribeUrl: "URL de suscripción",
+    subscribeCopied: "URL copiada al portapapeles.",
+    subscribeHint:
+      "Pega esta URL en Google Calendar o Apple Calendar para mantenerlo sincronizado.",
+    regenerateToken: "Revocar y regenerar token",
+    regenerating: "Regenerando…",
+    tokenRegenerated: "Token regenerado. Actualiza tu suscripción.",
+    subscribeCalendar: "Suscribirse desde mi cliente de calendario",
+  },
   common: {
     loading: "Cargando…",
     error: "Ha ocurrido un error inesperado.",

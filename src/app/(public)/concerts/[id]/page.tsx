@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { DeleteConcertButton } from "@/components/concert/DeleteConcertButton";
 import { SaveToCalendarButton } from "@/components/concert/SaveToCalendarButton";
 import { LikeButton } from "@/components/concert/LikeButton";
+import { ExportConcertButtons } from "@/components/concert/ExportConcertButtons";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -167,6 +168,8 @@ export default async function ConcertDetailPage({ params }: PageProps) {
           <Link href="/">← Volver al calendario</Link>
         </Button>
       </div>
+
+      {concert.visibility === "PUBLIC" && <ExportConcertButtons concert={concert} />}
     </div>
   );
 }

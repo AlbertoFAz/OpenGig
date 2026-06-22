@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserCalendarEntries } from "@/lib/repositories/calendar-entries";
 import { PrivateCalendar } from "@/components/calendar/PrivateCalendar";
 import { NewPersonalEntryDialog } from "@/components/concert/NewPersonalEntryDialog";
+import { CalendarSubscribeButton } from "@/components/calendar/CalendarSubscribeButton";
 
 export const metadata = { title: "Mi calendario — OpenGig" };
 
@@ -14,7 +15,12 @@ export default async function MyCalendarPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const entries = await getUserCalendarEntries();
+  const [entries, profileResult] = await Promise.all([
+    getUserCalendarEntries(),
+    supabase.from("profiles").select("calendar_subscription_token").eq("id", user.id).maybeSingle(),
+  ]);
+
+  const subscriptionToken = profileResult.data?.calendar_subscription_token ?? null;
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -24,6 +30,12 @@ export default async function MyCalendarPage() {
       </div>
 
       <PrivateCalendar entries={entries} userId={user.id} />
+
+      {subscriptionToken && (
+        <div className="mt-8">
+          <CalendarSubscribeButton initialToken={subscriptionToken} />
+        </div>
+      )}
     </div>
   );
 }
