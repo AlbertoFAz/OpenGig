@@ -2,21 +2,22 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, User } from "lucide-react";
+import { LogOut, UserRound } from "lucide-react";
 import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 import { createClient } from "@/lib/supabase/client";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UserMenuProps {
   user: SupabaseUser | null;
@@ -50,38 +51,39 @@ export function UserMenu({ user }: UserMenuProps) {
     );
   }
 
+  const initials = (user.email ?? "U").slice(0, 2).toUpperCase();
+
   return (
-    <div className="flex items-center gap-3">
-      <span className="hidden text-sm text-muted-foreground sm:block">{user.email}</span>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={t.user.menuLabel}>
-            <User className="h-5 w-5" />
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-xs">
-          <DialogHeader>
-            <DialogTitle>{t.user.myAccount}</DialogTitle>
-            <DialogDescription>{user.email}</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-2 pt-2">
-            <Button variant="ghost" className="justify-start gap-2" asChild>
-              <Link href="/me/profile">
-                <User className="h-4 w-4" />
-                {t.user.myProfile}
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              className="justify-start gap-2 text-destructive hover:text-destructive"
-              onClick={handleLogout}
-            >
-              <LogOut className="h-4 w-4" />
-              {t.auth.logout}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon" className="rounded-full" aria-label={t.user.menuLabel}>
+          <Avatar className="size-8">
+            <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuLabel className="font-normal">
+          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/me/profile" className="cursor-pointer">
+            <UserRound data-icon="inline-start" />
+            {t.user.myProfile}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="text-destructive focus:text-destructive cursor-pointer"
+          onClick={handleLogout}
+        >
+          <LogOut data-icon="inline-start" />
+          {t.auth.logout}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

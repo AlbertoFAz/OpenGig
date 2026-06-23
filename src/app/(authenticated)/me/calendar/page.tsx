@@ -25,14 +25,19 @@ export default async function MyCalendarPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Mi calendario</h1>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Mi calendario</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Tus conciertos guardados y entradas personales.
+          </p>
+        </div>
         <NewPersonalEntryDialog />
       </div>
 
       <PrivateCalendar entries={entries} userId={user.id} />
 
       {subscriptionToken && (
-        <div className="mt-8">
+        <div className="mt-10">
           <CalendarSubscribeButton initialToken={subscriptionToken} />
         </div>
       )}

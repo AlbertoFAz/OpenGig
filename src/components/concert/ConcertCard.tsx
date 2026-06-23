@@ -2,11 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Heart, MapPin, Ticket } from "lucide-react";
+import { CalendarDays, Heart, MapPin, Music2, Ticket } from "lucide-react";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { Concert } from "@/lib/repositories/concerts";
 
 interface ConcertCardProps {
@@ -14,43 +15,57 @@ interface ConcertCardProps {
 }
 
 export function ConcertCard({ concert }: ConcertCardProps) {
-  const dateLabel = format(new Date(concert.date_time), "EEEE d MMMM yyyy · HH:mm", { locale: es });
+  const dateLabel = format(new Date(concert.date_time), "EEEE d MMMM yyyy · HH:mm", {
+    locale: es,
+  });
   const isPast = new Date(concert.date_time) < new Date();
 
   return (
-    <Card className={`flex flex-col overflow-hidden ${isPast ? "opacity-70" : ""}`}>
+    <Card
+      className={cn(
+        "group flex flex-col overflow-hidden transition-shadow hover:shadow-md",
+        isPast && "opacity-60"
+      )}
+    >
       {concert.image_url ? (
-        <div className="relative h-40 w-full">
+        <div className="relative h-44 w-full overflow-hidden">
           <Image
             src={concert.image_url}
             alt={concert.name}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, 50vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
+          {isPast && <div className="absolute inset-0 bg-background/40" />}
         </div>
       ) : (
-        <div className="bg-muted h-40 w-full" />
+        <div className="from-muted to-muted/50 flex h-44 w-full items-center justify-center bg-gradient-to-br">
+          <Music2 className="text-muted-foreground/30 size-12" />
+        </div>
       )}
 
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="line-clamp-2 text-base leading-tight">{concert.name}</CardTitle>
-          {isPast && <Badge variant="secondary">Pasado</Badge>}
+          <CardTitle className="line-clamp-2 text-base leading-snug">{concert.name}</CardTitle>
+          {isPast && (
+            <Badge variant="secondary" className="shrink-0 text-xs">
+              Pasado
+            </Badge>
+          )}
         </div>
       </CardHeader>
 
-      <CardContent className="text-muted-foreground flex flex-col gap-1.5 pb-3 text-sm">
+      <CardContent className="flex flex-col gap-1.5 pb-3 text-sm text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <CalendarDays size={14} />
+          <CalendarDays className="size-3.5 shrink-0" />
           <span className="capitalize">{dateLabel}</span>
         </span>
         <span className="flex items-center gap-1.5">
-          <MapPin size={14} />
-          <span className="line-clamp-1">{concert.venue_name}</span>
+          <MapPin className="size-3.5 shrink-0" />
+          <span className="truncate">{concert.venue_name}</span>
         </span>
         {concert.price !== null && concert.price !== undefined && (
-          <span className="font-medium">
+          <span className="font-medium text-foreground">
             {Number(concert.price) === 0 ? "Gratuito" : `${Number(concert.price).toFixed(2)} €`}
           </span>
         )}
@@ -58,8 +73,8 @@ export function ConcertCard({ concert }: ConcertCardProps) {
 
       <CardFooter className="mt-auto flex items-center gap-2 pt-0">
         {(concert.likes_count ?? 0) > 0 && (
-          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <Heart size={12} />
+          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Heart className="size-3" />
             {concert.likes_count}
           </span>
         )}
@@ -69,7 +84,7 @@ export function ConcertCard({ concert }: ConcertCardProps) {
         {concert.ticket_url && (
           <Button asChild size="sm" className="flex-1">
             <a href={concert.ticket_url} target="_blank" rel="noreferrer">
-              <Ticket size={14} className="mr-1" />
+              <Ticket data-icon="inline-start" />
               Entradas
             </a>
           </Button>
