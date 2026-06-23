@@ -29,7 +29,7 @@ export function ExportConcertButtons({ concert }: ExportConcertButtonsProps) {
               </a>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Compatible con Apple Calendar, Outlook y Thunderbird</TooltipContent>
+          <TooltipContent>{t.concert.tooltipIcs}</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -41,7 +41,7 @@ export function ExportConcertButtons({ concert }: ExportConcertButtonsProps) {
               </a>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Abre Google Calendar con el evento pre-rellenado</TooltipContent>
+          <TooltipContent>{t.concert.tooltipGoogle}</TooltipContent>
         </Tooltip>
       </div>
     </div>

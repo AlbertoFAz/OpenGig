@@ -5,8 +5,9 @@ import { getUserCalendarEntries } from "@/lib/repositories/calendar-entries";
 import { PrivateCalendar } from "@/components/calendar/PrivateCalendar";
 import { NewPersonalEntryDialog } from "@/components/concert/NewPersonalEntryDialog";
 import { CalendarSubscribeButton } from "@/components/calendar/CalendarSubscribeButton";
+import { CalendarPageHeader } from "@/components/calendar/CalendarPageHeader";
 
-export const metadata = { title: "Mi calendario — OpenGig" };
+export const metadata = { title: "My calendar — OpenGig" };
 
 export default async function MyCalendarPage() {
   const supabase = await createClient();
@@ -25,12 +26,7 @@ export default async function MyCalendarPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Mi calendario</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Tus conciertos guardados y entradas personales.
-          </p>
-        </div>
+        <CalendarPageHeader />
         <NewPersonalEntryDialog />
       </div>
 

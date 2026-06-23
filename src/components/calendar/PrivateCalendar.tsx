@@ -1,23 +1,15 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
-import { es as dateFnsEs } from "date-fns/locale";
+import { es as dateFnsEs, enUS as dateFnsEn } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { CalendarEntryWithConcert } from "@/lib/repositories/calendar-entries";
 import { CalendarEntryPanel } from "./CalendarEntryPanel";
-
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek: () => startOfWeek(new Date(), { locale: dateFnsEs }),
-  getDay,
-  locales: { es: dateFnsEs },
-});
 
 interface CalendarEvent {
   id: string;
@@ -34,20 +26,38 @@ interface PrivateCalendarProps {
 
 export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) {
   const router = useRouter();
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [view, setView] = useState<View>("month");
-
-  const MESSAGES = {
-    today: t.calendar.today,
-    previous: "Anterior",
-    next: "Siguiente",
-    month: t.calendar.month,
-    week: t.calendar.week,
-    day: t.calendar.day,
-    noEventsInRange: t.calendar.noEntries,
-    showMore: (total: number) => `+${total} más`,
-  };
   const [date, setDate] = useState(new Date());
+
+  const dateFnsLocale = locale === "en" ? dateFnsEn : dateFnsEs;
+
+  const localizer = useMemo(
+    () =>
+      dateFnsLocalizer({
+        format,
+        parse,
+        startOfWeek: () => startOfWeek(new Date(), { locale: dateFnsLocale }),
+        getDay,
+        locales: { es: dateFnsEs, en: dateFnsEn },
+      }),
+    [dateFnsLocale]
+  );
+
+  const MESSAGES = useMemo(
+    () => ({
+      today: t.calendar.today,
+      previous: t.calendar.previous,
+      next: t.calendar.next,
+      month: t.calendar.month,
+      week: t.calendar.week,
+      day: t.calendar.day,
+      agenda: t.calendar.agenda,
+      noEventsInRange: t.calendar.noEntries,
+      showMore: (total: number) => t.calendar.showMore.replace("{n}", String(total)),
+    }),
+    [t]
+  );
   const [selectedEntry, setSelectedEntry] = useState<CalendarEntryWithConcert | null>(null);
 
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), []);
@@ -117,7 +127,7 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
             }
           }}
           eventPropGetter={eventPropGetter}
-          culture="es"
+          culture={locale}
           messages={MESSAGES}
           className="rounded-lg border bg-background p-2"
         />

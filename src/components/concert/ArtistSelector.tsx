@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { X, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 interface ArtistOption {
   id: string;
@@ -17,6 +18,7 @@ interface ArtistSelectorProps {
 }
 
 export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
+  const { t } = useLocale();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ArtistOption[]>([]);
   const [selected, setSelected] = useState<ArtistOption[]>([]);
@@ -94,7 +96,7 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
                 type="button"
                 onClick={() => removeArtist(artist.id)}
                 className="hover:text-destructive ml-1"
-                aria-label={`Eliminar ${artist.display_name}`}
+                aria-label={`${t.artistSelector.removeArtist} ${artist.display_name}`}
               >
                 <X className="h-3 w-3" />
               </button>
@@ -111,7 +113,7 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
           value={query}
           onChange={handleInputChange}
           onFocus={() => query && setOpen(true)}
-          placeholder="Buscar artistas por nombre…"
+          placeholder={t.artistSelector.searchPlaceholder}
           className="pl-9"
         />
 
@@ -135,7 +137,7 @@ export function ArtistSelector({ value, onChange }: ArtistSelectorProps) {
 
         {open && query.length >= 2 && results.length === 0 && (
           <div className="bg-popover border-border absolute z-50 mt-1 w-full rounded-md border px-3 py-2 text-sm shadow-md">
-            <span className="text-muted-foreground">No se encontraron artistas.</span>
+            <span className="text-muted-foreground">{t.artistSelector.noResults}</span>
           </div>
         )}
       </div>

@@ -1,19 +1,13 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
-export const metadata = { title: "Registrarse — OpenGig" };
+export const metadata = { title: "Sign up — OpenGig" };
 
 export default function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl">Crear cuenta</CardTitle>
-          <CardDescription>Crea tu cuenta en OpenGig.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RegisterForm />
-        </CardContent>
+        <RegisterForm />
       </Card>
     </div>
   );

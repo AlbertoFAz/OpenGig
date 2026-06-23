@@ -1,13 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import { CalendarDays, Heart, MapPin, Music2, Ticket } from "lucide-react";
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
 
 interface ConcertCardProps {
@@ -15,8 +19,10 @@ interface ConcertCardProps {
 }
 
 export function ConcertCard({ concert }: ConcertCardProps) {
+  const { t, locale } = useLocale();
+  const dateFnsLocale = locale === "en" ? enUS : es;
   const dateLabel = format(new Date(concert.date_time), "EEEE d MMMM yyyy · HH:mm", {
-    locale: es,
+    locale: dateFnsLocale,
   });
   const isPast = new Date(concert.date_time) < new Date();
 
@@ -49,7 +55,7 @@ export function ConcertCard({ concert }: ConcertCardProps) {
           <CardTitle className="line-clamp-2 text-base leading-snug">{concert.name}</CardTitle>
           {isPast && (
             <Badge variant="secondary" className="shrink-0 text-xs">
-              Pasado
+              {t.concert.past}
             </Badge>
           )}
         </div>
@@ -66,7 +72,7 @@ export function ConcertCard({ concert }: ConcertCardProps) {
         </span>
         {concert.price !== null && concert.price !== undefined && (
           <span className="font-medium text-foreground">
-            {Number(concert.price) === 0 ? "Gratuito" : `${Number(concert.price).toFixed(2)} €`}
+            {Number(concert.price) === 0 ? t.concert.free : `${Number(concert.price).toFixed(2)} €`}
           </span>
         )}
       </CardContent>
@@ -79,13 +85,13 @@ export function ConcertCard({ concert }: ConcertCardProps) {
           </span>
         )}
         <Button asChild size="sm" variant="outline" className="flex-1">
-          <Link href={`/concerts/${concert.id}`}>Ver detalles</Link>
+          <Link href={`/concerts/${concert.id}`}>{t.concert.viewDetails}</Link>
         </Button>
         {concert.ticket_url && (
           <Button asChild size="sm" className="flex-1">
             <a href={concert.ticket_url} target="_blank" rel="noreferrer">
               <Ticket data-icon="inline-start" />
-              Entradas
+              {t.concert.tickets}
             </a>
           </Button>
         )}
