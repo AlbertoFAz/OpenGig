@@ -49,8 +49,13 @@ export const en = {
     markRead: "Mark as read",
   },
   concert: {
-    name: "Concert name *",
+    name: "Concert name",
     namePlaceholder: "E.g. The Rolling Stones in London",
+    nameHint: "Optional — if left empty, artists will be used as the title.",
+    artistsRequired: "Add at least one artist.",
+    artistsSuggested: "Suggested artists",
+    venueSearch: "Search venue or type a name...",
+    venueSuggested: "Suggested venues",
     description: "Description",
     descriptionPlaceholder: "Describe the concert...",
     dateTime: "Date and time *",
@@ -115,7 +120,7 @@ export const en = {
     heroTitle: "Concert calendar",
     heroDesc:
       "Discover upcoming concerts, save them to your calendar and follow your favourite artists.",
-    featuredTitle: "Upcoming highlights",
+    featuredTitle: "Most popular",
     allConcerts: "All concerts",
   },
   pages: {

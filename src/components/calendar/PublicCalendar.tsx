@@ -5,13 +5,31 @@ import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es as dateFnsEs, enUS as dateFnsEn } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import { Music2 } from "lucide-react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
 
+interface CalendarEvent {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  resource: Concert;
+}
+
 interface PublicCalendarProps {
   concerts?: Concert[];
+}
+
+function EventCard({ event }: { event: CalendarEvent }) {
+  return (
+    <div className="flex h-full items-center gap-1 overflow-hidden px-1.5">
+      <Music2 className="size-3 shrink-0 opacity-70" />
+      <span className="truncate text-[11px] font-semibold leading-none">{event.title}</span>
+    </div>
+  );
 }
 
 export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
@@ -52,7 +70,7 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), []);
   const onView = useCallback((newView: View) => setView(newView), []);
 
-  const events = concerts.map((c) => {
+  const events: CalendarEvent[] = concerts.map((c) => {
     const start = new Date(c.date_time);
     const candidate = new Date(start.getTime() + 90 * 60 * 1000);
     const endOfDay = new Date(start);
@@ -60,6 +78,13 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
     const end = candidate > endOfDay ? endOfDay : candidate;
     return { id: c.id, title: c.name, start, end, resource: c };
   });
+
+  const COMPONENTS = useMemo(
+    () => ({
+      event: EventCard,
+    }),
+    []
+  );
 
   return (
     <div className="h-[calc(100vh-10rem)] min-h-[500px]">
@@ -73,7 +98,8 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
         onSelectEvent={(event) => router.push(`/concerts/${event.id}`)}
         culture={locale}
         messages={MESSAGES}
-        className="rounded-lg border bg-background p-2"
+        components={COMPONENTS}
+        className="rounded-xl border bg-background p-2"
       />
     </div>
   );

@@ -51,8 +51,13 @@ export const es = {
     markRead: "Marcar como leída",
   },
   concert: {
-    name: "Nombre del concierto *",
+    name: "Nombre del concierto",
     namePlaceholder: "Ej. The Rolling Stones en Madrid",
+    nameHint: "Opcional — si se deja vacío se usarán los artistas como título.",
+    artistsRequired: "Añade al menos un artista.",
+    artistsSuggested: "Artistas sugeridos",
+    venueSearch: "Buscar sala o escribir un nombre...",
+    venueSuggested: "Salas sugeridas",
     description: "Descripción",
     descriptionPlaceholder: "Describe el concierto...",
     dateTime: "Fecha y hora *",
@@ -117,7 +122,7 @@ export const es = {
     heroTitle: "Calendario de conciertos",
     heroDesc:
       "Descubre los próximos conciertos, guárdalos en tu calendario y sigue a tus artistas favoritos.",
-    featuredTitle: "Próximos destacados",
+    featuredTitle: "Los más populares",
     allConcerts: "Todos los conciertos",
   },
   pages: {

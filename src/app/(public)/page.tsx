@@ -10,7 +10,7 @@ export default async function HomePage() {
     getFeaturedConcerts(),
   ]);
 
-  const featured = rankConcerts(todayConcerts).slice(0, 6);
+  const featured = rankConcerts(todayConcerts).slice(0, 10);
 
   return <HomeContent featured={featured} upcoming={upcomingConcerts} />;
 }
