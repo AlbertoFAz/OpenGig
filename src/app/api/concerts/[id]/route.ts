@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { concertServerSchema } from "@/lib/schemas/concert";
 
 const patchBodySchema = concertServerSchema.partial().extend({
-  artistIds: z.array(z.string().uuid()).optional(),
+  artistIds: z.array(z.string().uuid()).min(1).optional(),
 });
 
 interface RouteContext {
@@ -43,6 +43,7 @@ export async function PATCH(request: Request, ctx: RouteContext) {
     ...("ticket_url" in concertFields && { ticket_url: concertFields.ticket_url ?? null }),
     ...("price" in concertFields && { price: concertFields.price ?? null }),
     ...(concertFields.visibility !== undefined && { visibility: concertFields.visibility }),
+    ...("venueId" in concertFields && { venue_id: concertFields.venueId ?? null }),
   };
 
   const { data, error } = await supabase

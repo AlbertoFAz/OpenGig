@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -69,103 +70,118 @@ export function RegisterForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        {/* Selector de rol */}
-        <FormField
-          control={form.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.register.roleQuestion}</FormLabel>
-              <FormControl>
-                <div className="grid gap-2">
-                  {REGISTERABLE_ROLES.map((role) => (
-                    <label
-                      key={role}
-                      className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
-                        field.value === role
-                          ? "border-primary bg-primary/5"
-                          : "hover:border-muted-foreground/50"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        value={role}
-                        checked={field.value === role}
-                        onChange={() => field.onChange(role)}
-                        className="mt-0.5 accent-primary"
-                      />
-                      <div>
-                        <p className="text-sm font-medium">{ROLE_LABELS[role]}</p>
-                        <p className="text-muted-foreground text-xs">{ROLE_DESCRIPTIONS[role]}</p>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      <CardHeader>
+        <CardTitle className="text-2xl">{t.auth.registerTitle}</CardTitle>
+        <CardDescription>{t.auth.registerDesc}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            {/* Selector de rol */}
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.register.roleQuestion}</FormLabel>
+                  <FormControl>
+                    <div className="grid gap-2">
+                      {REGISTERABLE_ROLES.map((role) => (
+                        <label
+                          key={role}
+                          className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors ${
+                            field.value === role
+                              ? "border-primary bg-primary/5"
+                              : "hover:border-muted-foreground/50"
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            value={role}
+                            checked={field.value === role}
+                            onChange={() => field.onChange(role)}
+                            className="mt-0.5 accent-primary"
+                          />
+                          <div>
+                            <p className="text-sm font-medium">{ROLE_LABELS[role]}</p>
+                            <p className="text-muted-foreground text-xs">
+                              {ROLE_DESCRIPTIONS[role]}
+                            </p>
+                          </div>
+                        </label>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.auth.email}</FormLabel>
-              <FormControl>
-                <Input type="email" autoComplete="email" placeholder="tu@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.auth.email}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      placeholder="tu@email.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.auth.password}</FormLabel>
-              <FormControl>
-                <Input type="password" autoComplete="new-password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.auth.password}</FormLabel>
+                  <FormControl>
+                    <Input type="password" autoComplete="new-password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.register.confirmPassword}</FormLabel>
-              <FormControl>
-                <Input type="password" autoComplete="new-password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.register.confirmPassword}</FormLabel>
+                  <FormControl>
+                    <Input type="password" autoComplete="new-password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? t.common.loading : t.auth.register}
-        </Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? t.common.loading : t.auth.register}
+            </Button>
 
-        <Button type="button" variant="outline" className="w-full" onClick={onGoogleLogin}>
-          {t.auth.continueWithGoogle}
-        </Button>
+            <Button type="button" variant="outline" className="w-full" onClick={onGoogleLogin}>
+              {t.auth.continueWithGoogle}
+            </Button>
 
-        <p className="text-center text-sm text-muted-foreground">
-          {t.auth.alreadyHaveAccount}{" "}
-          <Link href="/login" className="font-medium hover:underline">
-            {t.auth.login}
-          </Link>
-        </p>
-      </form>
-    </Form>
+            <p className="text-center text-sm text-muted-foreground">
+              {t.auth.alreadyHaveAccount}{" "}
+              <Link href="/login" className="font-medium hover:underline">
+                {t.auth.login}
+              </Link>
+            </p>
+          </form>
+        </Form>
+      </CardContent>
+    </>
   );
 }

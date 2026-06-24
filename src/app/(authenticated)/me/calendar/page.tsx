@@ -5,8 +5,9 @@ import { getUserCalendarEntries } from "@/lib/repositories/calendar-entries";
 import { PrivateCalendar } from "@/components/calendar/PrivateCalendar";
 import { NewPersonalEntryDialog } from "@/components/concert/NewPersonalEntryDialog";
 import { CalendarSubscribeButton } from "@/components/calendar/CalendarSubscribeButton";
+import { CalendarPageHeader } from "@/components/calendar/CalendarPageHeader";
 
-export const metadata = { title: "Mi calendario — OpenGig" };
+export const metadata = { title: "My calendar — OpenGig" };
 
 export default async function MyCalendarPage() {
   const supabase = await createClient();
@@ -25,14 +26,14 @@ export default async function MyCalendarPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Mi calendario</h1>
+        <CalendarPageHeader />
         <NewPersonalEntryDialog />
       </div>
 
       <PrivateCalendar entries={entries} userId={user.id} />
 
       {subscriptionToken && (
-        <div className="mt-8">
+        <div className="mt-10">
           <CalendarSubscribeButton initialToken={subscriptionToken} />
         </div>
       )}

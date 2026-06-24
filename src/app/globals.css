@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-plus-jakarta);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-syne);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -127,4 +127,53 @@
   html {
     @apply font-sans;
   }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading, var(--font-sans));
+    letter-spacing: -0.02em;
+  }
+}
+
+/* react-big-calendar overrides */
+.rbc-calendar {
+  font-family: var(--font-plus-jakarta, var(--font-sans)) !important;
+}
+.rbc-event {
+  border-radius: 6px !important;
+  padding: 2px 0 !important;
+  border-width: 1.5px !important;
+}
+.rbc-event.rbc-selected {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 1px;
+}
+.rbc-toolbar button {
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  transition: all 0.15s !important;
+}
+.rbc-toolbar button:hover {
+  transform: translateY(-1px) !important;
+}
+.rbc-today {
+  background-color: color-mix(in oklch, var(--primary) 6%, transparent) !important;
+}
+.rbc-off-range-bg {
+  background-color: color-mix(in oklch, var(--muted) 50%, transparent) !important;
+}
+.rbc-header {
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  padding: 8px 4px !important;
+}
+.rbc-show-more {
+  font-weight: 700 !important;
+  font-size: 0.75rem !important;
 }

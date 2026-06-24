@@ -4,10 +4,7 @@ export const VISIBILITY_OPTIONS = ["PUBLIC", "PRIVATE"] as const;
 export type ConcertVisibility = (typeof VISIBILITY_OPTIONS)[number];
 
 export const concertSchema = z.object({
-  name: z
-    .string()
-    .min(3, "El nombre debe tener al menos 3 caracteres.")
-    .max(100, "El nombre no puede superar los 100 caracteres."),
+  name: z.string().max(100, "El nombre no puede superar los 100 caracteres.").optional(),
   description: z
     .string()
     .max(2000, "La descripción no puede superar los 2000 caracteres.")
@@ -36,7 +33,9 @@ export const concertSchema = z.object({
 export type ConcertInput = z.infer<typeof concertSchema>;
 
 export const concertServerSchema = concertSchema.omit({ image: true }).extend({
+  name: z.string().min(1).max(100),
   image_url: z.string().url().optional(),
+  venueId: z.string().uuid().optional(),
 });
 
 export type ConcertServerInput = z.infer<typeof concertServerSchema>;

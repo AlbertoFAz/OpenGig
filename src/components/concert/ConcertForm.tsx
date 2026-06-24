@@ -11,7 +11,8 @@ import { concertSchema, type ConcertInput } from "@/lib/schemas/concert";
 import type { UserRole } from "@/lib/schemas/profile";
 import { createClient } from "@/lib/supabase/client";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { ArtistSelector } from "@/components/concert/ArtistSelector";
+import { ArtistSelector, type ArtistOption } from "@/components/concert/ArtistSelector";
+import { VenueSelector } from "@/components/concert/VenueSelector";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,6 +30,7 @@ interface ConcertFormProps {
     id?: string;
     image_url?: string;
     artistIds?: string[];
+    venueId?: string;
   };
   userRole?: UserRole;
 }
@@ -38,6 +40,9 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
+  const [artistObjects, setArtistObjects] = useState<ArtistOption[]>([]);
+  const [artistError, setArtistError] = useState<string | null>(null);
+  const [venueId, setVenueId] = useState<string | undefined>(defaultValues?.venueId);
   const [imageMode, setImageMode] = useState<"file" | "url">("file");
   const [imageUrlInput, setImageUrlInput] = useState("");
   const isEditing = !!defaultValues?.id;
@@ -58,6 +63,19 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   });
 
   async function onSubmit(values: ConcertInput) {
+    // Validar artistas (mínimo 1)
+    if (artistIds.length === 0) {
+      setArtistError(t.concert.artistsRequired);
+      return;
+    }
+    setArtistError(null);
+
+    // Auto-generar título a partir de los artistas si se dejó vacío
+    const resolvedName =
+      values.name?.trim() ||
+      artistObjects.map((a) => a.display_name).join(" + ") ||
+      artistIds.join(", ");
+
     setLoading(true);
     const supabase = createClient();
 
@@ -93,7 +111,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
       }
 
       const payload = {
-        name: values.name,
+        name: resolvedName,
         description: values.description || undefined,
         date_time: new Date(values.date_time).toISOString(),
         venue_name: values.venue_name,
@@ -103,6 +121,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         image_url: image_url || undefined,
         visibility: onlyPublic ? "PUBLIC" : values.visibility,
         artistIds,
+        venueId,
       };
 
       let concertId: string;
@@ -144,6 +163,24 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
+        {/* Artistas — obligatorio, va primero */}
+        <div className="grid gap-2">
+          <p className="text-sm font-medium">
+            {t.concert.artists} <span className="text-destructive">*</span>
+          </p>
+          <ArtistSelector
+            value={artistIds}
+            onChange={(ids) => {
+              setArtistIds(ids);
+              if (ids.length > 0) setArtistError(null);
+            }}
+            onSelectionChange={setArtistObjects}
+          />
+          <p className="text-muted-foreground text-xs">{t.concert.artistsHint}</p>
+          {artistError && <p className="text-destructive text-sm">{artistError}</p>}
+        </div>
+
+        {/* Nombre — opcional */}
         <FormField
           control={form.control}
           name="name"
@@ -153,6 +190,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
               <FormControl>
                 <Input placeholder={t.concert.namePlaceholder} {...field} />
               </FormControl>
+              <FormDescription>{t.concert.nameHint}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -217,6 +255,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
           />
         </div>
 
+        {/* Sala — VenueSelector */}
         <FormField
           control={form.control}
           name="venue_name"
@@ -224,7 +263,13 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             <FormItem>
               <FormLabel>{t.concert.venue}</FormLabel>
               <FormControl>
-                <Input placeholder={t.concert.venuePlaceholder} {...field} />
+                <VenueSelector
+                  value={field.value ?? ""}
+                  onChange={(name, profileId) => {
+                    field.onChange(name);
+                    setVenueId(profileId);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -339,14 +384,6 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             </p>
           )}
         </FormItem>
-
-        {(userRole === "ARTIST" || userRole === "VENUE" || userRole === "COLLABORATOR") && (
-          <div className="grid gap-2">
-            <p className="text-sm font-medium">{t.concert.artists}</p>
-            <ArtistSelector value={artistIds} onChange={setArtistIds} />
-            <p className="text-muted-foreground text-xs">{t.concert.artistsHint}</p>
-          </div>
-        )}
 
         {onlyPublic ? (
           <div className="text-muted-foreground flex items-start gap-2 rounded-md border px-3 py-2 text-sm">

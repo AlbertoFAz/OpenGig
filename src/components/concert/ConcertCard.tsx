@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarDays, Heart, MapPin, Ticket } from "lucide-react";
+import { enUS } from "date-fns/locale";
+import { Heart, MapPin, Music2, Ticket } from "lucide-react";
 
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
 
 interface ConcertCardProps {
@@ -14,67 +17,94 @@ interface ConcertCardProps {
 }
 
 export function ConcertCard({ concert }: ConcertCardProps) {
-  const dateLabel = format(new Date(concert.date_time), "EEEE d MMMM yyyy · HH:mm", { locale: es });
-  const isPast = new Date(concert.date_time) < new Date();
+  const { t, locale } = useLocale();
+  const dateFnsLocale = locale === "en" ? enUS : es;
+  const date = new Date(concert.date_time);
+  const day = format(date, "d");
+  const month = format(date, "MMM", { locale: dateFnsLocale }).toUpperCase();
+  const time = format(date, "HH:mm");
+  const isPast = date < new Date();
 
   return (
-    <Card className={`flex flex-col overflow-hidden ${isPast ? "opacity-70" : ""}`}>
-      {concert.image_url ? (
-        <div className="relative h-40 w-full">
+    <article
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm",
+        "transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl",
+        isPast && "opacity-65"
+      )}
+    >
+      {/* Enlace estirado: cubre toda la tarjeta */}
+      <Link
+        href={`/concerts/${concert.id}`}
+        className="absolute inset-0 z-10"
+        aria-label={concert.name}
+      />
+
+      {/* Zona imagen con overlay */}
+      <div className="relative h-52 overflow-hidden">
+        {concert.image_url ? (
           <Image
             src={concert.image_url}
             alt={concert.name}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, 50vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
           />
-        </div>
-      ) : (
-        <div className="bg-muted h-40 w-full" />
-      )}
-
-      <CardHeader className="pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="line-clamp-2 text-base leading-tight">{concert.name}</CardTitle>
-          {isPast && <Badge variant="secondary">Pasado</Badge>}
-        </div>
-      </CardHeader>
-
-      <CardContent className="text-muted-foreground flex flex-col gap-1.5 pb-3 text-sm">
-        <span className="flex items-center gap-1.5">
-          <CalendarDays size={14} />
-          <span className="capitalize">{dateLabel}</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <MapPin size={14} />
-          <span className="line-clamp-1">{concert.venue_name}</span>
-        </span>
-        {concert.price !== null && concert.price !== undefined && (
-          <span className="font-medium">
-            {Number(concert.price) === 0 ? "Gratuito" : `${Number(concert.price).toFixed(2)} €`}
-          </span>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900">
+            <Music2 className="size-14 text-white/15" />
+          </div>
         )}
-      </CardContent>
 
-      <CardFooter className="mt-auto flex items-center gap-2 pt-0">
+        {/* Degradado inferior para texto */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+        {/* Chip de fecha — arriba izquierda */}
+        <div className="absolute left-3 top-3 rounded-xl bg-black/50 px-2.5 py-1.5 text-center leading-none backdrop-blur-sm">
+          <div className="text-[10px] font-bold tracking-widest text-white/70">{month}</div>
+          <div className="text-lg font-bold text-white">{day}</div>
+          <div className="text-[10px] text-white/60">{time}</div>
+        </div>
+
+        {/* Likes — arriba derecha */}
         {(concert.likes_count ?? 0) > 0 && (
-          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-            <Heart size={12} />
+          <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
+            <Heart className="size-3 fill-rose-400 text-rose-400" />
             {concert.likes_count}
-          </span>
+          </div>
         )}
-        <Button asChild size="sm" variant="outline" className="flex-1">
-          <Link href={`/concerts/${concert.id}`}>Ver detalles</Link>
-        </Button>
+
+        {/* Nombre y sala superpuestos al degradado */}
+        <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-10">
+          <h3 className="line-clamp-2 text-base font-bold leading-snug text-white">
+            {concert.name}
+          </h3>
+          <p className="mt-0.5 flex items-center gap-1 truncate text-xs text-white/65">
+            <MapPin className="size-3 shrink-0" />
+            {concert.venue_name}
+          </p>
+        </div>
+      </div>
+
+      {/* Footer: precio + botón tickets (z-20 para quedar sobre el enlace estirado) */}
+      <div className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
+        <span className="text-sm font-semibold">
+          {concert.price === null || concert.price === undefined ? null : Number(concert.price) ===
+            0 ? (
+            <span className="text-emerald-600 dark:text-emerald-400">{t.concert.free}</span>
+          ) : (
+            `${Number(concert.price).toFixed(2)} €`
+          )}
+        </span>
         {concert.ticket_url && (
-          <Button asChild size="sm" className="flex-1">
+          <Button asChild size="sm" variant="outline">
             <a href={concert.ticket_url} target="_blank" rel="noreferrer">
-              <Ticket size={14} className="mr-1" />
-              Entradas
+              <Ticket data-icon="inline-start" />
+              {t.concert.tickets}
             </a>
           </Button>
         )}
-      </CardFooter>
-    </Card>
+      </div>
+    </article>
   );
 }

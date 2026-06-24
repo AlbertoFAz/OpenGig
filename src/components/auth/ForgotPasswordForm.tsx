@@ -11,6 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -58,32 +59,45 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t.auth.email}</FormLabel>
-              <FormControl>
-                <Input type="email" autoComplete="email" placeholder="tu@email.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      <CardHeader>
+        <CardTitle className="text-2xl">{t.auth.forgotPasswordTitle}</CardTitle>
+        <CardDescription>{t.auth.forgotPasswordDesc}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t.auth.email}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      autoComplete="email"
+                      placeholder="tu@email.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? t.common.loading : t.auth.resetPassword}
-        </Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? t.common.loading : t.auth.resetPassword}
+            </Button>
 
-        <p className="text-center text-sm text-muted-foreground">
-          <Link href="/login" className="font-medium hover:underline">
-            Volver a {t.auth.login}
-          </Link>
-        </p>
-      </form>
-    </Form>
+            <p className="text-center text-sm text-muted-foreground">
+              <Link href="/login" className="font-medium hover:underline">
+                {t.auth.backToLogin}
+              </Link>
+            </p>
+          </form>
+        </Form>
+      </CardContent>
+    </>
   );
 }

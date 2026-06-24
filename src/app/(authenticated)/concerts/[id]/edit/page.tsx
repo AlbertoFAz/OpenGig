@@ -1,9 +1,8 @@
 import { notFound, redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getConcertById } from "@/lib/repositories/concerts";
 import { getConcertArtists } from "@/lib/repositories/profiles";
 import { createClient } from "@/lib/supabase/server";
-import { ConcertForm } from "@/components/concert/ConcertForm";
+import { ConcertFormCard } from "@/components/concert/ConcertFormCard";
 import type { ConcertInput } from "@/lib/schemas/concert";
 import { format } from "date-fns";
 
@@ -51,15 +50,7 @@ export default async function EditConcertPage({ params }: PageProps) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>Editar concierto</CardTitle>
-          <CardDescription>Modifica los datos del concierto.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ConcertForm defaultValues={defaultValues} userRole={userRole} />
-        </CardContent>
-      </Card>
+      <ConcertFormCard mode="edit" userRole={userRole} defaultValues={defaultValues} />
     </div>
   );
 }
