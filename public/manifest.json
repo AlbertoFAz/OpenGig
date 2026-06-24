@@ -1,0 +1,39 @@
+{
+  "name": "OpenGig",
+  "short_name": "OpenGig",
+  "description": "Calendario colaborativo de conciertos en vivo",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "theme_color": "#0a0a0a",
+  "background_color": "#fcf7f3",
+  "orientation": "portrait-primary",
+  "categories": ["music", "entertainment", "productivity"],
+  "icons": [
+    {
+      "src": "/OpenGig_favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/OpenGig_favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Calendario público",
+      "url": "/",
+      "description": "Ver el calendario de conciertos"
+    },
+    {
+      "name": "Mi calendario",
+      "url": "/me/calendar",
+      "description": "Ver mi calendario personal"
+    }
+  ]
+}

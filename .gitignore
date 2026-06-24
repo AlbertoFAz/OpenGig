@@ -17,6 +17,10 @@
 /.next/
 /out/
 
+# PWA — generado en build, no pertenece al repositorio
+/public/sw.js
+/public/sw.js.map
+
 # production
 /build
 

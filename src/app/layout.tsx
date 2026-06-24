@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Syne, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +28,19 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "OpenGig — Calendario colaborativo de conciertos",
   description: "Descubre, comparte y exporta conciertos en vivo a tu calendario personal.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "OpenGig",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fcf7f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#080808" },
+  ],
 };
 
 export default function RootLayout({
