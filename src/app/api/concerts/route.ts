@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { concertServerSchema } from "@/lib/schemas/concert";
 
 const bodySchema = concertServerSchema.extend({
-  artistIds: z.array(z.string().uuid()).optional(),
+  artistIds: z.array(z.string().uuid()).min(1, "Añade al menos un artista."),
 });
 
 export async function POST(request: Request) {
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
     description,
     venue_address,
     visibility,
+    venueId,
     artistIds,
     ...required
   } = parsed.data;
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
       ticket_url: ticket_url ?? null,
       price: price ?? null,
       visibility: visibility ?? "PUBLIC",
+      venue_id: venueId ?? null,
     })
     .select()
     .single();
@@ -55,7 +57,7 @@ export async function POST(request: Request) {
   await supabase.from("calendar_entries").insert({ user_id: user.id, concert_id: data.id });
 
   // Vincular artistas
-  if (artistIds && artistIds.length > 0) {
+  if (artistIds.length > 0) {
     await supabase
       .from("concert_artists")
       .insert(artistIds.map((artistId) => ({ concert_id: data.id, artist_profile_id: artistId })));

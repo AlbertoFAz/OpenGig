@@ -4,9 +4,19 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const q = (searchParams.get("q") ?? "").trim();
-  if (!q) return NextResponse.json([]);
-
   const supabase = await createClient();
+
+  if (!q) {
+    // Sin query: devolver artistas más populares (por prestigio) como sugerencias
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, username, display_name, image_url")
+      .eq("role", "ARTIST")
+      .order("prestige", { ascending: false })
+      .limit(6);
+    return NextResponse.json(data ?? []);
+  }
+
   const { data } = await supabase
     .from("profiles")
     .select("id, username, display_name, image_url")

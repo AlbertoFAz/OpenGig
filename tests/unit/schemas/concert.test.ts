@@ -28,15 +28,24 @@ describe("concertSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("rechaza nombre demasiado corto", () => {
+  it("acepta nombre omitido (título opcional)", () => {
     const result = concertSchema.safeParse({
-      name: "AB",
+      date_time: VALID_DATE,
+      venue_name: "Sala",
+      visibility: "PUBLIC",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rechaza nombre demasiado largo (más de 100 caracteres)", () => {
+    const result = concertSchema.safeParse({
+      name: "A".repeat(101),
       date_time: VALID_DATE,
       venue_name: "Sala",
       visibility: "PUBLIC",
     });
     expect(result.success).toBe(false);
-    expect(result.error?.issues[0]?.message).toContain("3 caracteres");
+    expect(result.error?.issues[0]?.message).toContain("100 caracteres");
   });
 
   it("rechaza fecha pasada", () => {
