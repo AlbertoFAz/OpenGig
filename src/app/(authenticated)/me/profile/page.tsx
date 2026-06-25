@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { getMyProfile } from "@/lib/repositories/profiles";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ROLE_LABELS } from "@/lib/schemas/profile";
+import { PushSubscriptionButton } from "@/components/notifications/PushSubscriptionButton";
 
 export const metadata = { title: "Mi perfil — OpenGig" };
 
@@ -43,8 +44,13 @@ export default async function MyProfilePage() {
           </div>
         </CardHeader>
         <Separator />
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-6">
           <ProfileForm profile={profile} />
+          <Separator />
+          <div>
+            <h3 className="mb-3 text-sm font-semibold">Notificaciones push</h3>
+            <PushSubscriptionButton />
+          </div>
         </CardContent>
       </Card>
     </div>
