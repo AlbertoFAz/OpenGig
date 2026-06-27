@@ -1,38 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { CalendarDays, MapPin, Music2, Pencil, Ticket } from "lucide-react";
+import { CalendarDays, MapPin, Music2, Pencil, Ticket, BadgeCheck } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import { DeleteConcertButton } from "@/components/concert/DeleteConcertButton";
 import { SaveToCalendarButton } from "@/components/concert/SaveToCalendarButton";
 import { LikeButton } from "@/components/concert/LikeButton";
 import { ExportConcertButtons } from "@/components/concert/ExportConcertButtons";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
-
-interface Artist {
-  id: string;
-  username: string;
-  display_name: string;
-}
+import type { ConcertArtistWithEndorsement } from "@/lib/repositories/profiles";
 
 interface ConcertDetailContentProps {
   concert: Concert & {
     profiles?: { username: string; display_name: string | null } | null;
   };
-  artists: Artist[];
+  artists: ConcertArtistWithEndorsement[];
   alreadySaved: boolean;
   alreadyLiked: boolean;
   userId: string | null;
   isOwner: boolean;
   savedCount: number;
+  isLinkedArtist: boolean;
+  isVenue: boolean;
 }
 
 export function ConcertDetailContent({
@@ -43,9 +43,18 @@ export function ConcertDetailContent({
   userId,
   isOwner,
   savedCount,
+  isLinkedArtist,
+  isVenue,
 }: ConcertDetailContentProps) {
   const { t, locale } = useLocale();
   const dateFnsLocale = locale === "en" ? enUS : es;
+  const [venueEndorsed, setVenueEndorsed] = useState(!!concert.venue_endorsed_at);
+  const [endorsingArtist, setEndorsingArtist] = useState(false);
+  const [endorsingVenue, setEndorsingVenue] = useState(false);
+
+  // Saber si el usuario logueado ya avaló como artista
+  const myArtistEntry = artists.find((a) => a.id === userId);
+  const [artistEndorsed, setArtistEndorsed] = useState(!!myArtistEntry?.endorsed_at);
 
   const dateLabel = format(
     new Date(concert.date_time),
@@ -53,6 +62,30 @@ export function ConcertDetailContent({
     { locale: dateFnsLocale }
   );
   const isPast = new Date(concert.date_time) < new Date();
+
+  async function handleEndorse(as: "artist" | "venue") {
+    if (as === "artist") setEndorsingArtist(true);
+    else setEndorsingVenue(true);
+
+    try {
+      const res = await fetch(`/api/concerts/${concert.id}/endorse`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ as }),
+      });
+      if (!res.ok) throw new Error();
+      if (as === "artist") setArtistEndorsed(true);
+      else setVenueEndorsed(true);
+      toast.success("Aval registrado");
+    } catch {
+      toast.error("Error al registrar el aval");
+    } finally {
+      if (as === "artist") setEndorsingArtist(false);
+      else setEndorsingVenue(false);
+    }
+  }
+
+  const endorsedCount = artists.filter((a) => a.endorsed_at).length + (venueEndorsed ? 1 : 0);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -75,11 +108,15 @@ export function ConcertDetailContent({
 
       <div className="mb-1 flex items-start justify-between gap-3">
         <h1 className="text-3xl font-bold leading-tight tracking-tight">{concert.name}</h1>
-        {isPast && (
-          <Badge variant="secondary" className="mt-1 shrink-0">
-            {t.concert.past}
-          </Badge>
-        )}
+        <div className="flex items-center gap-2 mt-1 shrink-0">
+          {isPast && <Badge variant="secondary">{t.concert.past}</Badge>}
+          {endorsedCount > 0 && (
+            <Badge className="flex items-center gap-1 bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
+              <BadgeCheck className="size-3.5" />
+              {endorsedCount} {endorsedCount === 1 ? "aval" : "avales"}
+            </Badge>
+          )}
+        </div>
       </div>
 
       {concert.profiles && (
@@ -103,6 +140,12 @@ export function ConcertDetailContent({
           <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
           <span>
             {concert.venue_name}
+            {venueEndorsed && (
+              <BadgeCheck
+                className="inline-block ml-1 size-3.5 text-emerald-500"
+                aria-label="Sala verificada"
+              />
+            )}
             {concert.venue_address && (
               <span className="text-muted-foreground"> · {concert.venue_address}</span>
             )}
@@ -130,9 +173,16 @@ export function ConcertDetailContent({
               <Link
                 key={artist.id}
                 href={`/profile/${artist.username}`}
-                className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/70"
+                className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/70"
               >
+                <RoleBadge role="ARTIST" size={14} />
                 {artist.display_name}
+                {artist.endorsed_at && (
+                  <BadgeCheck
+                    className="size-3.5 text-emerald-500"
+                    aria-label="Artista ha avalado este concierto"
+                  />
+                )}
               </Link>
             ))}
           </div>
@@ -143,6 +193,51 @@ export function ConcertDetailContent({
         <p className="mb-8 whitespace-pre-line leading-relaxed text-muted-foreground">
           {concert.description}
         </p>
+      )}
+
+      {/* Botones de aval para artistas/sala vinculados */}
+      {(isLinkedArtist || isVenue) && (
+        <div className="mb-6 rounded-xl border border-emerald-600/20 bg-emerald-600/5 p-4 space-y-2">
+          <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+            Este concierto te menciona. ¿Quieres avalarlo?
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            {isLinkedArtist && !artistEndorsed && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-emerald-600/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10"
+                onClick={() => handleEndorse("artist")}
+                disabled={endorsingArtist}
+              >
+                <BadgeCheck className="size-4 mr-1.5" />
+                Avalar como artista
+              </Button>
+            )}
+            {isLinkedArtist && artistEndorsed && (
+              <Badge className="bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
+                <BadgeCheck className="size-3.5 mr-1" /> Avalado como artista
+              </Badge>
+            )}
+            {isVenue && !venueEndorsed && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-emerald-600/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10"
+                onClick={() => handleEndorse("venue")}
+                disabled={endorsingVenue}
+              >
+                <BadgeCheck className="size-4 mr-1.5" />
+                Avalar como sala
+              </Button>
+            )}
+            {isVenue && venueEndorsed && (
+              <Badge className="bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
+                <BadgeCheck className="size-3.5 mr-1" /> Avalado como sala
+              </Badge>
+            )}
+          </div>
+        </div>
       )}
 
       <div className="flex flex-wrap gap-2">

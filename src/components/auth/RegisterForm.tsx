@@ -29,7 +29,7 @@ export function RegisterForm() {
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", confirmPassword: "", role: "USER" },
+    defaultValues: { display_name: "", email: "", password: "", confirmPassword: "", role: "USER" },
   });
 
   async function onSubmit(values: RegisterInput) {
@@ -40,7 +40,7 @@ export function RegisterForm() {
       password: values.password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
-        data: { role: values.role },
+        data: { role: values.role, full_name: values.display_name },
       },
     });
     setLoading(false);
@@ -112,6 +112,25 @@ export function RegisterForm() {
                         </label>
                       ))}
                     </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="display_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nombre público</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Como quieres que te vean los demás"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

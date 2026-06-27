@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, UserRound } from "lucide-react";
+import { LogOut, UserRound, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,12 +19,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { UserRole } from "@/lib/schemas/profile";
 
 interface UserMenuProps {
   user: SupabaseUser | null;
+  role?: string | null;
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user, role }: UserMenuProps) {
   const router = useRouter();
   const { t } = useLocale();
 
@@ -52,6 +55,7 @@ export function UserMenu({ user }: UserMenuProps) {
   }
 
   const initials = (user.email ?? "U").slice(0, 2).toUpperCase();
+  const userRole = (role ?? "USER") as UserRole;
 
   return (
     <DropdownMenu>
@@ -66,7 +70,10 @@ export function UserMenu({ user }: UserMenuProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuLabel className="font-normal">
-          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+          <div className="flex items-center gap-2">
+            <RoleBadge role={userRole} size={16} />
+            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+          </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -75,6 +82,17 @@ export function UserMenu({ user }: UserMenuProps) {
             {t.user.myProfile}
           </Link>
         </DropdownMenuItem>
+        {role === "ADMIN" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                <ShieldAlert data-icon="inline-start" />
+                Panel de administración
+              </Link>
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-destructive focus:text-destructive cursor-pointer"

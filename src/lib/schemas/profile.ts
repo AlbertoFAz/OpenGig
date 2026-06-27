@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-export const ROLE_OPTIONS = ["USER", "ARTIST", "VENUE", "COLLABORATOR"] as const;
+export const ROLE_OPTIONS = ["USER", "ARTIST", "VENUE", "COLLABORATOR", "ADMIN"] as const;
 export type UserRole = (typeof ROLE_OPTIONS)[number];
 
 // Roles que el usuario puede elegir al registrarse.
 // COLLABORATOR se obtiene por condiciones específicas, no en el registro.
+// ADMIN se asigna manualmente desde la base de datos.
 export const REGISTERABLE_ROLES = ["USER", "ARTIST", "VENUE"] as const;
 export type RegisterableRole = (typeof REGISTERABLE_ROLES)[number];
 
@@ -13,6 +14,16 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   ARTIST: "Artista",
   VENUE: "Sala / Recinto",
   COLLABORATOR: "Colaborador",
+  ADMIN: "Administrador",
+};
+
+/** Color del borde de tarjeta y acento de calendairo según el rol del creador */
+export const ROLE_COLORS: Record<UserRole, string> = {
+  USER: "oklch(0.6 0.15 240)", // azul
+  ARTIST: "oklch(0.65 0.16 35)", // ámbar/naranja
+  VENUE: "oklch(0.58 0.18 300)", // violeta
+  COLLABORATOR: "oklch(0.6 0.17 145)", // verde
+  ADMIN: "oklch(0.58 0.22 15)", // rojo
 };
 
 export const ROLE_DESCRIPTIONS: Record<RegisterableRole, string> = {

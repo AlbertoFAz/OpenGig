@@ -79,16 +79,25 @@ export async function searchArtists(query: string): Promise<Profile[]> {
   return (data ?? []) as Profile[];
 }
 
-/** Obtener los artistas de un concierto */
-export async function getConcertArtists(concertId: string): Promise<Profile[]> {
+export type ConcertArtistWithEndorsement = Pick<
+  Profile,
+  "id" | "username" | "display_name" | "image_url" | "role"
+> & { endorsed_at: string | null };
+
+/** Obtener los artistas de un concierto con su estado de aval */
+export async function getConcertArtists(
+  concertId: string
+): Promise<ConcertArtistWithEndorsement[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("concert_artists")
-    .select("profiles(id, username, display_name, image_url, role)")
+    .select("endorsed_at, profiles(id, username, display_name, image_url, role)")
     .eq("concert_id", concertId);
 
   if (!data) return [];
-  return data.flatMap((row) => (row.profiles ? [row.profiles as unknown as Profile] : []));
+  return data.flatMap((row) =>
+    row.profiles ? [{ ...(row.profiles as unknown as Profile), endorsed_at: row.endorsed_at }] : []
+  );
 }
 
 /** Sincronizar los artistas de un concierto (reemplazar lista completa) */

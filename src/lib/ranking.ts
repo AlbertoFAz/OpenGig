@@ -3,7 +3,7 @@ import type { Database } from "@/types/database.types";
 type Concert = Database["public"]["Tables"]["concerts"]["Row"];
 
 export interface RankableConcert extends Concert {
-  profiles?: { display_name: string; prestige: number } | null;
+  profiles?: { display_name: string; prestige: number; role?: string; username?: string } | null;
 }
 
 export interface RankingStrategy {
@@ -19,9 +19,9 @@ export class WeightedLikesAndPrestige implements RankingStrategy {
   }
 }
 
-export function rankConcerts(
-  concerts: RankableConcert[],
+export function rankConcerts<T extends RankableConcert>(
+  concerts: T[],
   strategy: RankingStrategy = new WeightedLikesAndPrestige()
-): RankableConcert[] {
+): T[] {
   return [...concerts].sort((a, b) => strategy.score(b) - strategy.score(a));
 }

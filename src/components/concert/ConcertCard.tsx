@@ -8,15 +8,22 @@ import { enUS } from "date-fns/locale";
 import { Heart, MapPin, Music2, Ticket } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import { cn } from "@/lib/utils";
+import { ROLE_COLORS, type UserRole } from "@/lib/schemas/profile";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
 
 interface ConcertCardProps {
   concert: Concert;
+  creator?: {
+    display_name: string;
+    username: string;
+    role: string;
+  } | null;
 }
 
-export function ConcertCard({ concert }: ConcertCardProps) {
+export function ConcertCard({ concert, creator }: ConcertCardProps) {
   const { t, locale } = useLocale();
   const dateFnsLocale = locale === "en" ? enUS : es;
   const date = new Date(concert.date_time);
@@ -24,14 +31,17 @@ export function ConcertCard({ concert }: ConcertCardProps) {
   const month = format(date, "MMM", { locale: dateFnsLocale }).toUpperCase();
   const time = format(date, "HH:mm");
   const isPast = date < new Date();
+  const role = (creator?.role ?? "USER") as UserRole;
+  const borderColor = ROLE_COLORS[role];
 
   return (
     <article
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border bg-card shadow-sm",
+        "group relative flex flex-col overflow-hidden rounded-2xl border-2 bg-card shadow-sm",
         "transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl",
         isPast && "opacity-65"
       )}
+      style={{ borderColor }}
     >
       {/* Enlace estirado: cubre toda la tarjeta */}
       <Link
@@ -86,24 +96,55 @@ export function ConcertCard({ concert }: ConcertCardProps) {
         </div>
       </div>
 
-      {/* Footer: precio + botón tickets (z-20 para quedar sobre el enlace estirado) */}
+      {/* Footer: creador + precio + tickets */}
       <div className="relative z-20 flex items-center justify-between gap-2 px-4 py-3">
-        <span className="text-sm font-semibold">
-          {concert.price === null || concert.price === undefined ? null : Number(concert.price) ===
-            0 ? (
-            <span className="text-emerald-600 dark:text-emerald-400">{t.concert.free}</span>
-          ) : (
-            `${Number(concert.price).toFixed(2)} €`
-          )}
-        </span>
-        {concert.ticket_url && (
-          <Button asChild size="sm" variant="outline">
-            <a href={concert.ticket_url} target="_blank" rel="noreferrer">
-              <Ticket data-icon="inline-start" />
-              {t.concert.tickets}
-            </a>
-          </Button>
+        {creator ? (
+          <Link
+            href={`/profile/${creator.username}`}
+            className="relative z-30 flex items-center gap-1.5 min-w-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <RoleBadge role={role} size={16} />
+            <span className="truncate text-xs text-muted-foreground hover:text-foreground transition-colors">
+              {creator.display_name}
+            </span>
+          </Link>
+        ) : (
+          <span className="text-sm font-semibold">
+            {concert.price === null || concert.price === undefined ? null : Number(
+                concert.price
+              ) === 0 ? (
+              <span className="text-emerald-600 dark:text-emerald-400">{t.concert.free}</span>
+            ) : (
+              `${Number(concert.price).toFixed(2)} €`
+            )}
+          </span>
         )}
+
+        <div className="flex items-center gap-2 shrink-0">
+          {creator && concert.price !== null && concert.price !== undefined && (
+            <span className="text-sm font-semibold">
+              {Number(concert.price) === 0 ? (
+                <span className="text-emerald-600 dark:text-emerald-400">{t.concert.free}</span>
+              ) : (
+                `${Number(concert.price).toFixed(2)} €`
+              )}
+            </span>
+          )}
+          {concert.ticket_url && (
+            <Button asChild size="sm" variant="outline">
+              <a
+                href={concert.ticket_url}
+                target="_blank"
+                rel="noreferrer"
+                className="relative z-30"
+              >
+                <Ticket data-icon="inline-start" />
+                {t.concert.tickets}
+              </a>
+            </Button>
+          )}
+        </div>
       </div>
     </article>
   );

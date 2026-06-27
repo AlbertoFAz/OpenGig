@@ -25,24 +25,26 @@ export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
   return data ?? [];
 }
 
+export type ConcertWithCreator = Concert & {
+  profiles: { display_name: string; prestige: number; role: string; username: string } | null;
+};
+
 /** Top conciertos de los próximos 90 días para la sección "Populares" */
-export async function getFeaturedConcerts(): Promise<
-  (Concert & { profiles: { display_name: string; prestige: number } | null })[]
-> {
+export async function getFeaturedConcerts(): Promise<ConcertWithCreator[]> {
   const supabase = await createClient();
   const from = new Date().toISOString();
   const to = new Date(Date.now() + 90 * 86_400_000).toISOString();
 
   const { data } = await supabase
     .from("concerts")
-    .select("*, profiles!created_by(display_name, prestige)")
+    .select("*, profiles!created_by(display_name, prestige, role, username)")
     .eq("visibility", "PUBLIC")
     .gte("date_time", from)
     .lte("date_time", to)
     .order("likes_count", { ascending: false })
     .limit(30);
 
-  return data ?? [];
+  return (data ?? []) as ConcertWithCreator[];
 }
 
 /** Detalle de un concierto por id */
