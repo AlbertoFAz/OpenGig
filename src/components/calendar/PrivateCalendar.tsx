@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
+import { useState, useCallback, useMemo, type ComponentType } from "react";
+import { Calendar, dateFnsLocalizer, type View, type ToolbarProps } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es as dateFnsEs, enUS as dateFnsEn } from "date-fns/locale";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { Music2, StickyNote } from "lucide-react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { CalendarToolbar } from "./CalendarToolbar";
 import type { CalendarEntryWithConcert } from "@/lib/repositories/calendar-entries";
 import { CalendarEntryPanel } from "./CalendarEntryPanel";
 
@@ -30,20 +31,30 @@ function EventCard({ event }: { event: CalendarEvent }) {
   return (
     <div className="flex h-full items-center gap-1 overflow-hidden px-1.5">
       {isPersonal ? (
-        <StickyNote className="size-3 shrink-0 opacity-70" />
+        <StickyNote className="size-2.5 shrink-0 opacity-60" />
       ) : (
-        <Music2 className="size-3 shrink-0 opacity-70" />
+        <Music2 className="size-2.5 shrink-0 opacity-60" />
       )}
-      <span className="truncate text-[11px] font-semibold leading-none">{event.title}</span>
+      <span className="truncate text-[10.5px] font-semibold leading-none tracking-tight">
+        {event.title}
+      </span>
     </div>
   );
 }
+
+/* Paleta semántica para cada tipo de entrada */
+const EVENT_COLORS = {
+  mine: { bg: "oklch(0.6 0.17 145)", border: "oklch(0.5 0.17 145)" },
+  saved: { bg: "oklch(0.58 0.18 270)", border: "oklch(0.48 0.18 270)" },
+  personal: { bg: "oklch(0.65 0.16 35)", border: "oklch(0.55 0.16 35)" },
+} as const;
 
 export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) {
   const router = useRouter();
   const { t, locale } = useLocale();
   const [view, setView] = useState<View>("month");
   const [date, setDate] = useState(new Date());
+  const [selectedEntry, setSelectedEntry] = useState<CalendarEntryWithConcert | null>(null);
 
   const dateFnsLocale = locale === "en" ? dateFnsEn : dateFnsEs;
 
@@ -74,8 +85,6 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
     [t]
   );
 
-  const [selectedEntry, setSelectedEntry] = useState<CalendarEntryWithConcert | null>(null);
-
   const onNavigate = useCallback((newDate: Date) => setDate(newDate), []);
   const onView = useCallback((newView: View) => setView(newView), []);
 
@@ -87,52 +96,57 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
     endOfDay.setHours(23, 59, 59, 0);
     const end = candidate > endOfDay ? endOfDay : candidate;
     const title = entry.concerts?.name ?? entry.title ?? t.calendar.personalEntry;
-
     return { id: entry.id, title, start, end, resource: entry };
   });
 
-  const eventPropGetter = (event: CalendarEvent) => {
-    const { concert_id, concerts } = event.resource;
-    let bg: string;
-    let border: string;
-    if (!concert_id) {
-      bg = "#f97316";
-      border = "#ea580c";
-    } else if (concerts?.created_by === userId) {
-      bg = "#22c55e";
-      border = "#16a34a";
-    } else {
-      bg = "#3b82f6";
-      border = "#2563eb";
-    }
-    return { style: { backgroundColor: bg, borderColor: border, color: "#fff" } };
-  };
+  const eventPropGetter = useCallback(
+    (event: CalendarEvent) => {
+      const { concert_id, concerts } = event.resource;
+      const colors = !concert_id
+        ? EVENT_COLORS.personal
+        : concerts?.created_by === userId
+          ? EVENT_COLORS.mine
+          : EVENT_COLORS.saved;
+      return {
+        style: { backgroundColor: colors.bg, borderColor: colors.border, color: "#fff" },
+      };
+    },
+    [userId]
+  );
 
   const COMPONENTS = useMemo(
     () => ({
       event: EventCard,
+      toolbar: CalendarToolbar as ComponentType<ToolbarProps<CalendarEvent, object>>,
     }),
     []
   );
 
   return (
     <>
-      <div className="mb-4 flex flex-wrap gap-4 text-sm">
+      {/* Leyenda */}
+      <div className="mb-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full bg-green-500" />
+          <span className="h-2.5 w-2.5 rounded-full" style={{ background: EVENT_COLORS.mine.bg }} />
           {t.calendar.myEvents}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full bg-blue-500" />
+          <span
+            className="h-2.5 w-2.5 rounded-full"
+            style={{ background: EVENT_COLORS.saved.bg }}
+          />
           {t.calendar.savedEvents}
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-full bg-orange-500" />
+          <span
+            className="h-2.5 w-2.5 rounded-full"
+            style={{ background: EVENT_COLORS.personal.bg }}
+          />
           {t.calendar.personalEntries}
         </span>
       </div>
 
-      <div className="h-[calc(100vh-14rem)] min-h-[500px]">
+      <div className="h-[calc(100vh-14rem)] min-h-[520px]">
         <Calendar
           localizer={localizer}
           events={events}
@@ -151,7 +165,7 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
           culture={locale}
           messages={MESSAGES}
           components={COMPONENTS}
-          className="rounded-xl border bg-background p-2"
+          className="rbc-redesign"
         />
       </div>
 
