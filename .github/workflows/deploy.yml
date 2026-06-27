@@ -1,13 +1,11 @@
 name: Deploy
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: # Solo ejecución manual — los deploys automáticos los gestiona la integración de Vercel
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs: []
     environment: production
 
     steps:
