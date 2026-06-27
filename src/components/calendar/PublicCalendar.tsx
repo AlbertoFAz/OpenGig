@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
-import { Calendar, dateFnsLocalizer, type View } from "react-big-calendar";
+import { useState, useCallback, useMemo, type ComponentType } from "react";
+import { Calendar, dateFnsLocalizer, type View, type ToolbarProps } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { es as dateFnsEs, enUS as dateFnsEn } from "date-fns/locale";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,7 @@ import { Music2 } from "lucide-react";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { CalendarToolbar } from "./CalendarToolbar";
 import type { Concert } from "@/lib/repositories/concerts";
 
 interface CalendarEvent {
@@ -26,8 +27,10 @@ interface PublicCalendarProps {
 function EventCard({ event }: { event: CalendarEvent }) {
   return (
     <div className="flex h-full items-center gap-1 overflow-hidden px-1.5">
-      <Music2 className="size-3 shrink-0 opacity-70" />
-      <span className="truncate text-[11px] font-semibold leading-none">{event.title}</span>
+      <Music2 className="size-2.5 shrink-0 opacity-60" />
+      <span className="truncate text-[10.5px] font-semibold leading-none tracking-tight">
+        {event.title}
+      </span>
     </div>
   );
 }
@@ -76,18 +79,36 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
     const endOfDay = new Date(start);
     endOfDay.setHours(23, 59, 59, 0);
     const end = candidate > endOfDay ? endOfDay : candidate;
-    return { id: c.id, title: c.name, start, end, resource: c };
+    return {
+      id: c.id,
+      title: c.name,
+      start,
+      end,
+      resource: c,
+    };
   });
+
+  const eventPropGetter = useCallback(
+    () => ({
+      style: {
+        backgroundColor: "oklch(0.65 0.16 35)",
+        color: "#fff",
+        border: "none",
+      },
+    }),
+    []
+  );
 
   const COMPONENTS = useMemo(
     () => ({
       event: EventCard,
+      toolbar: CalendarToolbar as ComponentType<ToolbarProps<CalendarEvent, object>>,
     }),
     []
   );
 
   return (
-    <div className="h-[calc(100vh-10rem)] min-h-[500px]">
+    <div className="h-[calc(100vh-10rem)] min-h-[520px]">
       <Calendar
         localizer={localizer}
         events={events}
@@ -98,8 +119,9 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
         onSelectEvent={(event) => router.push(`/concerts/${event.id}`)}
         culture={locale}
         messages={MESSAGES}
+        eventPropGetter={eventPropGetter}
         components={COMPONENTS}
-        className="rounded-xl border bg-background p-2"
+        className="rbc-redesign"
       />
     </div>
   );

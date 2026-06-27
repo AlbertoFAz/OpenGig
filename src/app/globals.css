@@ -138,42 +138,269 @@
   }
 }
 
-/* react-big-calendar overrides */
-.rbc-calendar {
+/* ==========================================================
+   REACT-BIG-CALENDAR — Redesign
+   Inspirado en Google Calendar, Notion Calendar, Linear.
+   Principios: espacio > bordes, contraste > grids, eventos
+   como protagonistas. Compatible con tema claro y oscuro.
+   ========================================================== */
+
+/* Base */
+.rbc-redesign {
   font-family: var(--font-plus-jakarta, var(--font-sans)) !important;
+  background: transparent !important;
+  border: none !important;
 }
-.rbc-event {
-  border-radius: 6px !important;
-  padding: 2px 0 !important;
-  border-width: 1.5px !important;
+
+/* Ocultar toolbar nativa — la reemplaza CalendarToolbar */
+.rbc-redesign .rbc-toolbar {
+  display: none !important;
 }
-.rbc-event.rbc-selected {
-  outline: 2px solid var(--ring) !important;
-  outline-offset: 1px;
+
+/* ── MONTH VIEW ────────────────────────────���────────────── */
+
+.rbc-redesign .rbc-month-view {
+  border: none !important;
+  background: transparent !important;
 }
-.rbc-toolbar button {
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  font-size: 0.8rem !important;
-  transition: all 0.15s !important;
+
+/* Separador de filas: una línea muy sutil */
+.rbc-redesign .rbc-month-row {
+  border-top: 1px solid color-mix(in oklch, currentColor 7%, transparent) !important;
 }
-.rbc-toolbar button:hover {
-  transform: translateY(-1px) !important;
+
+/* Sin separadores de columna — el espacio crea la cuadrícula */
+.rbc-redesign .rbc-day-bg + .rbc-day-bg {
+  border-left: none !important;
 }
-.rbc-today {
-  background-color: color-mix(in oklch, var(--primary) 6%, transparent) !important;
+
+/* Fondo del día actual — muy sutil */
+.rbc-redesign .rbc-today {
+  background-color: color-mix(in oklch, var(--primary) 4%, transparent) !important;
 }
-.rbc-off-range-bg {
-  background-color: color-mix(in oklch, var(--muted) 50%, transparent) !important;
+
+/* Días fuera del mes — sin fondo */
+.rbc-redesign .rbc-off-range-bg {
+  background: transparent !important;
 }
-.rbc-header {
-  font-weight: 700 !important;
-  font-size: 0.75rem !important;
-  letter-spacing: 0.05em !important;
+
+/* Cabeceras de días */
+.rbc-redesign .rbc-header {
+  border: none !important;
+  border-bottom: 1px solid color-mix(in oklch, currentColor 7%, transparent) !important;
+  padding: 6px 8px !important;
+  font-weight: 500 !important;
+  font-size: 0.67rem !important;
+  letter-spacing: 0.07em !important;
   text-transform: uppercase !important;
+  color: var(--muted-foreground) !important;
+}
+
+.rbc-redesign .rbc-header + .rbc-header {
+  border-left: none !important;
+}
+
+/* Número del día */
+.rbc-redesign .rbc-date-cell {
+  text-align: right !important;
+  padding: 3px 7px 1px !important;
+  font-size: 0.74rem !important;
+  font-weight: 400 !important;
+  color: var(--muted-foreground) !important;
+}
+
+.rbc-redesign .rbc-date-cell a {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+/* Hoy — círculo sobre el número */
+.rbc-redesign .rbc-date-cell.rbc-now a {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 50% !important;
+  background: var(--foreground) !important;
+  color: var(--background) !important;
+  font-weight: 700 !important;
+  font-size: 0.7rem !important;
+}
+
+/* Días del mes anterior / siguiente — muy tenues */
+.rbc-redesign .rbc-off-range .rbc-date-cell {
+  opacity: 0.28 !important;
+}
+
+/* Altura mínima de las filas del mes */
+.rbc-redesign .rbc-month-row {
+  min-height: 72px !important;
+}
+
+/* Contenido de la celda — menos padding vertical */
+.rbc-redesign .rbc-row-content {
+  padding-bottom: 2px !important;
+}
+
+/* ── EVENTS ─────────────────────────────────────────────── */
+
+.rbc-redesign .rbc-event {
+  border-radius: 4px !important;
+  padding: 1px 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: 17px !important;
+  cursor: pointer !important;
+  transition: opacity 0.1s !important;
+}
+
+.rbc-redesign .rbc-event:hover {
+  opacity: 0.88 !important;
+}
+
+.rbc-redesign .rbc-event.rbc-selected,
+.rbc-redesign .rbc-event:focus {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 1px !important;
+  box-shadow: none !important;
+}
+
+.rbc-redesign .rbc-event-label {
+  font-size: 0.62rem !important;
+  font-weight: 500 !important;
+}
+
+/* "Show more" — discreto */
+.rbc-redesign .rbc-show-more {
+  font-size: 0.65rem !important;
+  font-weight: 600 !important;
+  padding: 0 4px !important;
+  color: var(--muted-foreground) !important;
+  background: transparent !important;
+  border: none !important;
+}
+
+.rbc-redesign .rbc-show-more:hover {
+  color: var(--foreground) !important;
+  text-decoration: none !important;
+}
+
+/* Overlay popup del "show more" */
+.rbc-redesign .rbc-overlay {
+  background: var(--popover) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.3) !important;
+  padding: 8px !important;
+}
+
+.rbc-redesign .rbc-overlay-header {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  color: var(--muted-foreground) !important;
+  padding-bottom: 6px !important;
+  border-bottom: 1px solid var(--border) !important;
+  margin-bottom: 4px !important;
+}
+
+/* ── WEEK / DAY VIEW ────────────────────────────────────── */
+
+.rbc-redesign .rbc-time-view {
+  border: none !important;
+  background: transparent !important;
+}
+
+.rbc-redesign .rbc-time-header {
+  border-bottom: 1px solid color-mix(in oklch, currentColor 7%, transparent) !important;
+}
+
+.rbc-redesign .rbc-time-header-content {
+  border-left: none !important;
+}
+
+.rbc-redesign .rbc-time-header .rbc-header {
+  border-bottom: none !important;
+  text-align: center !important;
   padding: 8px 4px !important;
 }
-.rbc-show-more {
-  font-weight: 700 !important;
-  font-size: 0.75rem !important;
+
+/* Columna de horas */
+.rbc-redesign .rbc-time-gutter .rbc-time-slot {
+  font-size: 0.6rem !important;
+  color: var(--muted-foreground) !important;
+  padding-right: 10px !important;
+  opacity: 0.55 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Franja horaria — línea muy sutil cada hora */
+.rbc-redesign .rbc-timeslot-group {
+  border-bottom: 1px solid color-mix(in oklch, currentColor 5%, transparent) !important;
+  min-height: 44px !important;
+}
+
+/* Sin línea en la media hora */
+.rbc-redesign .rbc-time-slot {
+  border-top: none !important;
+}
+
+/* Separadores de columna en la vista semana */
+.rbc-redesign .rbc-time-content > * + * > * {
+  border-left: 1px solid color-mix(in oklch, currentColor 5%, transparent) !important;
+}
+
+/* Línea de la hora actual */
+.rbc-redesign .rbc-current-time-indicator {
+  height: 1px !important;
+  background-color: oklch(0.72 0.16 30) !important;
+  opacity: 0.9 !important;
+  z-index: 3 !important;
+}
+
+.rbc-redesign .rbc-current-time-indicator::before {
+  content: "" !important;
+  position: absolute !important;
+  left: -4px !important;
+  top: -4px !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-radius: 50% !important;
+  background: oklch(0.72 0.16 30) !important;
+}
+
+/* Eventos en vista semana — borde izquierdo de color */
+.rbc-redesign .rbc-day-slot .rbc-event {
+  border: none !important;
+  border-left: 2.5px solid rgba(255 255 255 / 0.25) !important;
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.rbc-redesign .rbc-day-slot .rbc-events-container {
+  margin-right: 4px !important;
+}
+
+/* ── AGENDA VIEW ─────────────────────────────────────────── */
+
+.rbc-redesign .rbc-agenda-view table.rbc-agenda-table {
+  border: none !important;
+}
+
+.rbc-redesign .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  border-bottom: 1px solid color-mix(in oklch, currentColor 7%, transparent) !important;
+  padding: 8px 6px !important;
+}
+
+.rbc-redesign .rbc-agenda-date-cell,
+.rbc-redesign .rbc-agenda-time-cell {
+  font-size: 0.73rem !important;
+  color: var(--muted-foreground) !important;
+  white-space: nowrap !important;
+}
+
+.rbc-redesign .rbc-agenda-empty {
+  font-size: 0.85rem !important;
+  color: var(--muted-foreground) !important;
+  padding: 2rem 0 !important;
+  text-align: center !important;
 }
