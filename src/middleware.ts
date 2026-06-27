@@ -1,17 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-// Rutas que requieren sesión activa
 const PROTECTED_PATHS = ["/concerts/new", "/concerts/", "/me/"];
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
   const pathname = request.nextUrl.pathname;
 
   const isProtected = PROTECTED_PATHS.some(
     (p) =>
       pathname.startsWith(p) &&
-      // /concerts/[id] es público; solo /concerts/new y /concerts/[id]/edit están protegidos
       (p !== "/concerts/" || pathname.endsWith("/edit") || pathname === "/concerts/new")
   );
 
