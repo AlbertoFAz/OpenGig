@@ -33,6 +33,9 @@ export default async function ConcertDetailPage({ params }: PageProps) {
     user ? hasLiked(concert.id) : Promise.resolve(false),
   ]);
 
+  const isLinkedArtist = user ? artists.some((a) => a.id === user.id) : false;
+  const isVenue = user ? concert.venue_id === user.id : false;
+
   return (
     <ConcertDetailContent
       concert={concert}
@@ -42,6 +45,8 @@ export default async function ConcertDetailPage({ params }: PageProps) {
       userId={user?.id ?? null}
       isOwner={isOwner}
       savedCount={savedCount}
+      isLinkedArtist={isLinkedArtist}
+      isVenue={isVenue}
     />
   );
 }

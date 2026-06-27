@@ -1,30 +1,8 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never;
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json;
-          operationName?: string;
-          query?: string;
-          variables?: Json;
-        };
-        Returns: Json;
-      };
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-    CompositeTypes: {
-      [_ in never]: never;
-    };
+  __InternalSupabase: {
+    PostgrestVersion: "14.5";
   };
   public: {
     Tables: {
@@ -80,14 +58,17 @@ export type Database = {
         Row: {
           artist_profile_id: string;
           concert_id: string;
+          endorsed_at: string | null;
         };
         Insert: {
           artist_profile_id: string;
           concert_id: string;
+          endorsed_at?: string | null;
         };
         Update: {
           artist_profile_id?: string;
           concert_id?: string;
+          endorsed_at?: string | null;
         };
         Relationships: [
           {
@@ -120,6 +101,7 @@ export type Database = {
           ticket_url: string | null;
           updated_at: string;
           venue_address: string;
+          venue_endorsed_at: string | null;
           venue_id: string | null;
           venue_name: string;
           visibility: Database["public"]["Enums"]["concert_visibility"];
@@ -137,6 +119,7 @@ export type Database = {
           ticket_url?: string | null;
           updated_at?: string;
           venue_address?: string;
+          venue_endorsed_at?: string | null;
           venue_id?: string | null;
           venue_name: string;
           visibility?: Database["public"]["Enums"]["concert_visibility"];
@@ -154,6 +137,7 @@ export type Database = {
           ticket_url?: string | null;
           updated_at?: string;
           venue_address?: string;
+          venue_endorsed_at?: string | null;
           venue_id?: string | null;
           venue_name?: string;
           visibility?: Database["public"]["Enums"]["concert_visibility"];
@@ -258,6 +242,7 @@ export type Database = {
           prestige: number;
           role: Database["public"]["Enums"]["user_role"];
           social_links: Json;
+          status: string;
           updated_at: string;
           username: string;
           venue_address: string | null;
@@ -274,6 +259,7 @@ export type Database = {
           prestige?: number;
           role?: Database["public"]["Enums"]["user_role"];
           social_links?: Json;
+          status?: string;
           updated_at?: string;
           username: string;
           venue_address?: string | null;
@@ -290,6 +276,7 @@ export type Database = {
           prestige?: number;
           role?: Database["public"]["Enums"]["user_role"];
           social_links?: Json;
+          status?: string;
           updated_at?: string;
           username?: string;
           venue_address?: string | null;
@@ -335,6 +322,41 @@ export type Database = {
           },
         ];
       };
+      push_subscriptions: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          p256dh: string;
+          user_id: string;
+        };
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          p256dh: string;
+          user_id: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          p256dh?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       system_config: {
         Row: {
           key: string;
@@ -365,12 +387,18 @@ export type Database = {
         Args: { p_concert_id: string };
         Returns: number;
       };
-      refresh_all_prestige: { Args: never; Returns: undefined };
+      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      refresh_all_prestige: { Args: Record<PropertyKey, never>; Returns: undefined };
     };
     Enums: {
       concert_visibility: "PUBLIC" | "PRIVATE";
-      notification_type: "PROMOTION_OFFER" | "LIKE_RECEIVED" | "CONCERT_UPDATED";
-      user_role: "USER" | "ARTIST" | "VENUE" | "COLLABORATOR";
+      notification_type:
+        | "PROMOTION_OFFER"
+        | "LIKE_RECEIVED"
+        | "CONCERT_UPDATED"
+        | "PENDING_APPROVAL"
+        | "CONCERT_ENDORSED";
+      user_role: "USER" | "ARTIST" | "VENUE" | "COLLABORATOR" | "ADMIN";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -494,14 +522,17 @@ export type CompositeTypes<
     : never;
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       concert_visibility: ["PUBLIC", "PRIVATE"],
-      notification_type: ["PROMOTION_OFFER", "LIKE_RECEIVED", "CONCERT_UPDATED"],
-      user_role: ["USER", "ARTIST", "VENUE", "COLLABORATOR"],
+      notification_type: [
+        "PROMOTION_OFFER",
+        "LIKE_RECEIVED",
+        "CONCERT_UPDATED",
+        "PENDING_APPROVAL",
+        "CONCERT_ENDORSED",
+      ],
+      user_role: ["USER", "ARTIST", "VENUE", "COLLABORATOR", "ADMIN"],
     },
   },
 } as const;

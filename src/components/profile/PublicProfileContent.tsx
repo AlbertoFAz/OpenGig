@@ -5,13 +5,15 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { MapPin, Users, Music2, ExternalLink, Star } from "lucide-react";
+import { MapPin, Users, Music2, ExternalLink, Star, Pencil } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { ROLE_LABELS } from "@/lib/schemas/profile";
+import { type UserRole } from "@/lib/schemas/profile";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { ProfileWithConcerts } from "@/lib/repositories/profiles";
 
@@ -25,9 +27,10 @@ interface Concert {
 
 interface PublicProfileContentProps {
   profile: ProfileWithConcerts;
+  isOwner?: boolean;
 }
 
-export function PublicProfileContent({ profile }: PublicProfileContentProps) {
+export function PublicProfileContent({ profile, isOwner = false }: PublicProfileContentProps) {
   const { t, locale } = useLocale();
   const dateFnsLocale = locale === "en" ? enUS : es;
   const socialLinks = (profile.social_links as Record<string, string> | null) ?? {};
@@ -52,11 +55,35 @@ export function PublicProfileContent({ profile }: PublicProfileContentProps) {
         </Avatar>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight">{profile.display_name}</h1>
-            <Badge variant="secondary">{ROLE_LABELS[profile.role]}</Badge>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight">{profile.display_name}</h1>
+              <RoleBadge role={profile.role as UserRole} size={22} />
+              <RoleBadge
+                role={profile.role as UserRole}
+                variant="label"
+                size={60}
+                className="opacity-80"
+              />
+            </div>
+            {isOwner && (
+              <Button asChild size="sm" variant="outline">
+                <Link href="/me/profile">
+                  <Pencil className="size-3.5 mr-1.5" />
+                  Editar perfil
+                </Link>
+              </Button>
+            )}
           </div>
-          <p className="text-muted-foreground text-sm">@{profile.username}</p>
+          <p className="text-muted-foreground text-sm mt-0.5">@{profile.username}</p>
+          {profile.status === "PENDING" && (
+            <Badge className="mt-1 bg-amber-500 text-white">Pendiente de aprobación</Badge>
+          )}
+          {profile.status === "BLOCKED" && (
+            <Badge variant="destructive" className="mt-1">
+              Cuenta bloqueada
+            </Badge>
+          )}
 
           {profile.prestige > 0 && (
             <p className="mt-1 flex items-center gap-1 text-sm">

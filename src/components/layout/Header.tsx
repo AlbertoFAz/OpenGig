@@ -7,12 +7,21 @@ import { NavLinks } from "./NavLinks";
 import { NotificationBellWrapper } from "./NotificationBellWrapper";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageToggle } from "./LanguageToggle";
+import { createClient } from "@/lib/supabase/server";
 
 interface HeaderProps {
   user: User | null;
 }
 
-export function Header({ user }: HeaderProps) {
+export async function Header({ user }: HeaderProps) {
+  let role: string | null = null;
+
+  if (user) {
+    const supabase = await createClient();
+    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    role = data?.role ?? null;
+  }
+
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2">
@@ -45,7 +54,7 @@ export function Header({ user }: HeaderProps) {
               <NotificationBellWrapper userId={user.id} />
             </Suspense>
           )}
-          <UserMenu user={user} />
+          <UserMenu user={user} role={role} />
         </div>
       </div>
     </header>

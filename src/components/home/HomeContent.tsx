@@ -4,10 +4,10 @@ import { Separator } from "@/components/ui/separator";
 import { ConcertCard } from "@/components/concert/ConcertCard";
 import { PublicCalendar } from "@/components/calendar/PublicCalendar";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import type { Concert } from "@/lib/repositories/concerts";
+import type { Concert, ConcertWithCreator } from "@/lib/repositories/concerts";
 
 interface HomeContentProps {
-  featured: Concert[];
+  featured: ConcertWithCreator[];
   upcoming: Concert[];
 }
 
@@ -28,7 +28,7 @@ export function HomeContent({ featured, upcoming }: HomeContentProps) {
           <h2 className="mb-6 text-xl font-bold tracking-tight">{t.home.featuredTitle}</h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {featured.map((concert) => (
-              <ConcertCard key={concert.id} concert={concert} />
+              <ConcertCard key={concert.id} concert={concert} creator={concert.profiles} />
             ))}
           </div>
         </section>

@@ -30,6 +30,7 @@ describe("loginSchema", () => {
 
 describe("registerSchema", () => {
   const valid = {
+    display_name: "Test User",
     email: "new@example.com",
     password: "password123",
     confirmPassword: "password123",
