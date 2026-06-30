@@ -162,7 +162,10 @@ export function ConcertDetailContent({
       <dl className="mb-6 grid gap-2.5 text-sm">
         <div className="flex items-start gap-2.5">
           <CalendarDays className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-          <span className="capitalize">{dateLabel}</span>
+          {/* suppressHydrationWarning: server (UTC) and client (local timezone) format the same UTC timestamp differently */}
+          <span className="capitalize" suppressHydrationWarning>
+            {dateLabel}
+          </span>
         </div>
         <div className="flex items-start gap-2.5">
           <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />

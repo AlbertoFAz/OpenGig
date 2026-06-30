@@ -74,10 +74,23 @@ export function ConcertCard({ concert, creator, endorsements }: ConcertCardProps
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
         {/* Chip de fecha — arriba izquierda */}
-        <div className="absolute left-3 top-3 rounded-xl bg-black/50 px-2.5 py-1.5 text-center leading-none backdrop-blur-sm">
-          <div className="text-[10px] font-bold tracking-widest text-white/70">{month}</div>
-          <div className="text-lg font-bold text-white">{day}</div>
-          <div className="text-[10px] text-white/60">{time}</div>
+        {/* suppressHydrationWarning: server (UTC) vs client (local timezone) format the same UTC timestamp differently */}
+        <div
+          className="absolute left-3 top-3 rounded-xl bg-black/50 px-2.5 py-1.5 text-center leading-none backdrop-blur-sm"
+          suppressHydrationWarning
+        >
+          <div
+            className="text-[10px] font-bold tracking-widest text-white/70"
+            suppressHydrationWarning
+          >
+            {month}
+          </div>
+          <div className="text-lg font-bold text-white" suppressHydrationWarning>
+            {day}
+          </div>
+          <div className="text-[10px] text-white/60" suppressHydrationWarning>
+            {time}
+          </div>
         </div>
 
         {/* Likes — arriba derecha */}
