@@ -1,11 +1,26 @@
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 
 import { createClient } from "@/lib/supabase/server";
 import { getUserCalendarEntries } from "@/lib/repositories/calendar-entries";
-import { PrivateCalendar } from "@/components/calendar/PrivateCalendar";
 import { NewPersonalEntryDialog } from "@/components/concert/NewPersonalEntryDialog";
 import { CalendarSubscribeButton } from "@/components/calendar/CalendarSubscribeButton";
 import { CalendarPageHeader } from "@/components/calendar/CalendarPageHeader";
+
+// ssr: false elimina el mismatch de hidratación causado por useState(new Date())
+// (servidor UTC vs cliente UTC+2) y saca react-big-calendar del camino crítico.
+const PrivateCalendar = dynamic(
+  () =>
+    import("@/components/calendar/PrivateCalendar").then((m) => ({
+      default: m.PrivateCalendar,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[calc(100vh-14rem)] min-h-[520px] animate-pulse rounded-2xl bg-muted/40" />
+    ),
+  }
+);
 
 export const metadata = { title: "My calendar — OpenGig" };
 
