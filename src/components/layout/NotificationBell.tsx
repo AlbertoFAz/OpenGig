@@ -132,52 +132,70 @@ export function NotificationBell({
           </p>
         ) : (
           <ul className="max-h-96 overflow-y-auto divide-y">
-            {notifications.map((n) => (
-              <li key={n.id} className={`px-4 py-3 ${!n.read_at ? "bg-muted/50" : ""}`}>
-                <div className="flex items-start gap-2">
-                  <span className="mt-0.5 text-base">{TYPE_ICONS[n.type] ?? "🔔"}</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm leading-snug">{n.message}</p>
-                    <p className="text-muted-foreground mt-0.5 text-xs">
-                      {formatDistanceToNow(new Date(n.created_at), {
-                        addSuffix: true,
-                        locale: dateFnsLocale,
-                      })}
-                    </p>
+            {notifications.map((n) => {
+              const payload = n.payload as Record<string, unknown>;
+              const concertId = typeof payload?.concert_id === "string" ? payload.concert_id : null;
 
-                    {n.type === "PROMOTION_OFFER" && !n.read_at && (
-                      <div className="mt-2 flex gap-2">
-                        <Button
-                          size="sm"
-                          className="h-7 text-xs"
-                          onClick={() => handleAcceptPromotion(n.id)}
-                        >
-                          {t.notifications.accept}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="h-7 text-xs"
-                          onClick={() => handleRejectPromotion(n.id)}
-                        >
-                          {t.notifications.reject}
-                        </Button>
-                      </div>
+              async function handleClick() {
+                await markRead(n.id);
+                setOpen(false);
+                if (concertId) router.push(`/concerts/${concertId}`);
+              }
+
+              return (
+                <li key={n.id} className={`${!n.read_at ? "bg-muted/50" : ""}`}>
+                  <div
+                    role={concertId ? "button" : undefined}
+                    onClick={concertId ? () => void handleClick() : undefined}
+                    className={`flex items-start gap-2 px-4 py-3 ${concertId ? "cursor-pointer hover:bg-muted/70 transition-colors" : ""}`}
+                  >
+                    <span className="mt-0.5 text-base">{TYPE_ICONS[n.type] ?? "🔔"}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm leading-snug">{n.message}</p>
+                      <p className="text-muted-foreground mt-0.5 text-xs">
+                        {formatDistanceToNow(new Date(n.created_at), {
+                          addSuffix: true,
+                          locale: dateFnsLocale,
+                        })}
+                      </p>
+
+                      {n.type === "PROMOTION_OFFER" && !n.read_at && (
+                        <div className="mt-2 flex gap-2" onClick={(e) => e.stopPropagation()}>
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={() => handleAcceptPromotion(n.id)}
+                          >
+                            {t.notifications.accept}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 text-xs"
+                            onClick={() => handleRejectPromotion(n.id)}
+                          >
+                            {t.notifications.reject}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+
+                    {!n.read_at && n.type !== "PROMOTION_OFFER" && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void markRead(n.id);
+                        }}
+                        className="text-muted-foreground hover:text-foreground mt-0.5 shrink-0 text-xs"
+                        aria-label={t.notifications.markRead}
+                      >
+                        ✕
+                      </button>
                     )}
                   </div>
-
-                  {!n.read_at && n.type !== "PROMOTION_OFFER" && (
-                    <button
-                      onClick={() => markRead(n.id)}
-                      className="text-muted-foreground hover:text-foreground mt-0.5 shrink-0 text-xs"
-                      aria-label={t.notifications.markRead}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              </li>
-            ))}
+                </li>
+              );
+            })}
           </ul>
         )}
       </PopoverContent>

@@ -21,9 +21,13 @@ interface ConcertCardProps {
     username: string;
     role: string;
   } | null;
+  endorsements?: {
+    artistCount: number;
+    venueEndorsed: boolean;
+  };
 }
 
-export function ConcertCard({ concert, creator }: ConcertCardProps) {
+export function ConcertCard({ concert, creator, endorsements }: ConcertCardProps) {
   const { t, locale } = useLocale();
   const dateFnsLocale = locale === "en" ? enUS : es;
   const date = new Date(concert.date_time);
@@ -77,12 +81,24 @@ export function ConcertCard({ concert, creator }: ConcertCardProps) {
         </div>
 
         {/* Likes — arriba derecha */}
-        {(concert.likes_count ?? 0) > 0 && (
-          <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
-            <Heart className="size-3 fill-rose-400 text-rose-400" />
-            {concert.likes_count}
-          </div>
-        )}
+        <div className="absolute right-3 top-3 flex flex-col items-end gap-1">
+          {(concert.likes_count ?? 0) > 0 && (
+            <div className="flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-xs text-white backdrop-blur-sm">
+              <Heart className="size-3 fill-rose-400 text-rose-400" />
+              {concert.likes_count}
+            </div>
+          )}
+          {(endorsements?.artistCount ?? 0) > 0 && (
+            <div className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-emerald-300 backdrop-blur-sm">
+              🎸 {endorsements!.artistCount}
+            </div>
+          )}
+          {endorsements?.venueEndorsed && (
+            <div className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-emerald-300 backdrop-blur-sm">
+              🏢
+            </div>
+          )}
+        </div>
 
         {/* Nombre y sala superpuestos al degradado */}
         <div className="absolute inset-x-0 bottom-0 px-4 pb-3 pt-10">

@@ -87,9 +87,9 @@ export function ConcertDetailContent({
     }
   }
 
-  const endorsedCount =
-    artists.filter((a) => a.kind === "registered" && a.endorsed_at).length +
-    (venueEndorsed ? 1 : 0);
+  const endorsedArtistCount = artists.filter(
+    (a) => a.kind === "registered" && a.endorsed_at
+  ).length;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -114,10 +114,16 @@ export function ConcertDetailContent({
         <h1 className="text-3xl font-bold leading-tight tracking-tight">{concert.name}</h1>
         <div className="flex items-center gap-2 mt-1 shrink-0">
           {isPast && <Badge variant="secondary">{t.concert.past}</Badge>}
-          {endorsedCount > 0 && (
+          {endorsedArtistCount > 0 && (
             <Badge className="flex items-center gap-1 bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
               <BadgeCheck className="size-3.5" />
-              {endorsedCount} {endorsedCount === 1 ? "aval" : "avales"}
+              🎸 {endorsedArtistCount} {endorsedArtistCount === 1 ? "artista" : "artistas"}
+            </Badge>
+          )}
+          {venueEndorsed && (
+            <Badge className="flex items-center gap-1 bg-sky-600/10 text-sky-600 border-sky-600/20">
+              <BadgeCheck className="size-3.5" />
+              🏢 Sala
             </Badge>
           )}
         </div>

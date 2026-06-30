@@ -27,7 +27,20 @@ export async function getUpcomingConcerts(days = 90): Promise<ConcertWithCreator
 
 export type ConcertWithCreator = Concert & {
   profiles: { display_name: string; prestige: number; role: string; username: string } | null;
+  endorsed_artist_count?: number;
 };
+
+type RawConcertWithArtists = Omit<ConcertWithCreator, "endorsed_artist_count"> & {
+  concert_artists: { endorsed_at: string | null }[];
+};
+
+function withEndorsedCount(raw: RawConcertWithArtists): ConcertWithCreator {
+  const { concert_artists, ...rest } = raw;
+  return {
+    ...rest,
+    endorsed_artist_count: concert_artists.filter((a) => a.endorsed_at !== null).length,
+  };
+}
 
 /** Top conciertos de los próximos 90 días para la sección "Populares" */
 export async function getFeaturedConcerts(): Promise<ConcertWithCreator[]> {
@@ -37,14 +50,16 @@ export async function getFeaturedConcerts(): Promise<ConcertWithCreator[]> {
 
   const { data } = await supabase
     .from("concerts")
-    .select("*, profiles!created_by(display_name, prestige, role, username)")
+    .select(
+      "*, profiles!created_by(display_name, prestige, role, username), concert_artists(endorsed_at)"
+    )
     .eq("visibility", "PUBLIC")
     .gte("date_time", from)
     .lte("date_time", to)
     .order("likes_count", { ascending: false })
     .limit(30);
 
-  return (data ?? []) as ConcertWithCreator[];
+  return ((data ?? []) as unknown as RawConcertWithArtists[]).map(withEndorsedCount);
 }
 
 /** Detalle de un concierto por id */

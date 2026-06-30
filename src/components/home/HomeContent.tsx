@@ -28,7 +28,15 @@ export function HomeContent({ featured, upcoming }: HomeContentProps) {
           <h2 className="mb-6 text-xl font-bold tracking-tight">{t.home.featuredTitle}</h2>
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {featured.map((concert) => (
-              <ConcertCard key={concert.id} concert={concert} creator={concert.profiles} />
+              <ConcertCard
+                key={concert.id}
+                concert={concert}
+                creator={concert.profiles}
+                endorsements={{
+                  artistCount: concert.endorsed_artist_count ?? 0,
+                  venueEndorsed: !!concert.venue_endorsed_at,
+                }}
+              />
             ))}
           </div>
         </section>
