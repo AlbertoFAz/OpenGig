@@ -54,7 +54,6 @@ export const es = {
     name: "Nombre del concierto",
     namePlaceholder: "Ej. The Rolling Stones en Madrid",
     nameHint: "Opcional — si se deja vacío se usarán los artistas como título.",
-    artistsRequired: "Añade al menos un artista.",
     artistsSuggested: "Artistas sugeridos",
     venueSearch: "Buscar sala o escribir un nombre...",
     venueSuggested: "Salas sugeridas",
@@ -76,7 +75,9 @@ export const es = {
     currentImage: "Imagen actual:",
     view: "ver",
     artists: "Artistas",
-    artistsHint: "Vincula los artistas registrados que actúan en este concierto.",
+    artistsHint:
+      "Busca artistas registrados o escribe un nombre y pulsa «Añadir» para incluir artistas no registrados.",
+    artistsAddFreetext: "Añadir",
     publicOnlyHint:
       "Los artistas y salas publican conciertos en el calendario público. No es posible crear conciertos privados con este rol.",
     visibility: "Visibilidad",
@@ -210,8 +211,9 @@ export const es = {
   },
   artistSelector: {
     searchPlaceholder: "Buscar artistas por nombre…",
-    noResults: "No se encontraron artistas.",
+    noResults: "No se encontraron artistas registrados.",
     removeArtist: "Eliminar",
+    addFreetext: 'Añadir "{name}" como artista no registrado',
   },
   common: {
     loading: "Cargando…",

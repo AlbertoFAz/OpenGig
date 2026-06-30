@@ -34,6 +34,7 @@ export default async function EditConcertPage({ params }: PageProps) {
     id: string;
     image_url?: string;
     artistIds?: string[];
+    artistFreeNames?: string[];
   } = {
     id: concert.id,
     name: concert.name,
@@ -44,7 +45,8 @@ export default async function EditConcertPage({ params }: PageProps) {
     ticket_url: concert.ticket_url ?? undefined,
     price: concert.price !== null ? Number(concert.price) : undefined,
     visibility: concert.visibility ?? "PUBLIC",
-    artistIds: artists.map((a) => a.id),
+    artistIds: artists.flatMap((a) => (a.kind === "registered" ? [a.id] : [])),
+    artistFreeNames: artists.flatMap((a) => (a.kind === "unregistered" ? [a.name] : [])),
     ...(concert.image_url ? { image_url: concert.image_url } : {}),
   };
 

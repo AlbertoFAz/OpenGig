@@ -30,6 +30,7 @@ interface ConcertFormProps {
     id?: string;
     image_url?: string;
     artistIds?: string[];
+    artistFreeNames?: string[];
     venueId?: string;
   };
   userRole?: UserRole;
@@ -40,8 +41,10 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   const { t } = useLocale();
   const [loading, setLoading] = useState(false);
   const [artistIds, setArtistIds] = useState<string[]>(defaultValues?.artistIds ?? []);
+  const [artistFreeNames, setArtistFreeNames] = useState<string[]>(
+    defaultValues?.artistFreeNames ?? []
+  );
   const [artistObjects, setArtistObjects] = useState<ArtistOption[]>([]);
-  const [artistError, setArtistError] = useState<string | null>(null);
   const [venueId, setVenueId] = useState<string | undefined>(defaultValues?.venueId);
   const [imageMode, setImageMode] = useState<"file" | "url">("file");
   const [imageUrlInput, setImageUrlInput] = useState("");
@@ -63,18 +66,12 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   });
 
   async function onSubmit(values: ConcertInput) {
-    // Validar artistas (mínimo 1)
-    if (artistIds.length === 0) {
-      setArtistError(t.concert.artistsRequired);
-      return;
-    }
-    setArtistError(null);
-
     // Auto-generar título a partir de los artistas si se dejó vacío
+    const allArtistNames = [...artistObjects.map((a) => a.display_name), ...artistFreeNames];
     const resolvedName =
       values.name?.trim() ||
-      artistObjects.map((a) => a.display_name).join(" + ") ||
-      artistIds.join(", ");
+      (allArtistNames.length > 0 ? allArtistNames.join(" + ") : undefined) ||
+      values.venue_name;
 
     setLoading(true);
     const supabase = createClient();
@@ -121,6 +118,7 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
         image_url: image_url || undefined,
         visibility: onlyPublic ? "PUBLIC" : values.visibility,
         artistIds,
+        artistFreeNames,
         venueId,
       };
 
@@ -163,21 +161,19 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-5">
-        {/* Artistas — obligatorio, va primero */}
+        {/* Artistas — opcional */}
         <div className="grid gap-2">
-          <p className="text-sm font-medium">
-            {t.concert.artists} <span className="text-destructive">*</span>
-          </p>
+          <p className="text-sm font-medium">{t.concert.artists}</p>
           <ArtistSelector
             value={artistIds}
-            onChange={(ids) => {
+            freeNames={artistFreeNames}
+            onChange={(ids, names) => {
               setArtistIds(ids);
-              if (ids.length > 0) setArtistError(null);
+              setArtistFreeNames(names);
             }}
             onSelectionChange={setArtistObjects}
           />
           <p className="text-muted-foreground text-xs">{t.concert.artistsHint}</p>
-          {artistError && <p className="text-destructive text-sm">{artistError}</p>}
         </div>
 
         {/* Nombre — opcional */}

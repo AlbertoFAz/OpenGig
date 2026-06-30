@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { concertServerSchema } from "@/lib/schemas/concert";
 
 const patchBodySchema = concertServerSchema.partial().extend({
-  artistIds: z.array(z.string().uuid()).min(1).optional(),
+  artistIds: z.array(z.string().uuid()).optional(),
+  artistFreeNames: z.array(z.string().min(1).max(200)).optional(),
 });
 
 interface RouteContext {
@@ -28,7 +29,7 @@ export async function PATCH(request: Request, ctx: RouteContext) {
     );
   }
 
-  const { artistIds, ...concertFields } = parsed.data;
+  const { artistIds, artistFreeNames, ...concertFields } = parsed.data;
 
   // Convertir undefined a null para campos nullable en Supabase
   const updatePayload = {
@@ -56,13 +57,22 @@ export async function PATCH(request: Request, ctx: RouteContext) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Concierto no encontrado" }, { status: 404 });
 
-  // Sincronizar artistas si se envían
-  if (artistIds !== undefined) {
+  // Sincronizar artistas si se envían (artistIds o artistFreeNames, basta con uno)
+  if (artistIds !== undefined || artistFreeNames !== undefined) {
     await supabase.from("concert_artists").delete().eq("concert_id", id);
-    if (artistIds.length > 0) {
-      await supabase
-        .from("concert_artists")
-        .insert(artistIds.map((artistId) => ({ concert_id: id, artist_profile_id: artistId })));
+
+    const registeredRows = (artistIds ?? []).map((artistId) => ({
+      concert_id: id,
+      artist_profile_id: artistId,
+    }));
+    const freeRows = (artistFreeNames ?? []).map((name) => ({
+      concert_id: id,
+      artist_name: name,
+    }));
+    const allRows = [...registeredRows, ...freeRows];
+
+    if (allRows.length > 0) {
+      await supabase.from("concert_artists").insert(allRows);
     }
   }
 

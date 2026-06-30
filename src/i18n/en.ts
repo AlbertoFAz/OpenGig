@@ -52,7 +52,6 @@ export const en = {
     name: "Concert name",
     namePlaceholder: "E.g. The Rolling Stones in London",
     nameHint: "Optional — if left empty, artists will be used as the title.",
-    artistsRequired: "Add at least one artist.",
     artistsSuggested: "Suggested artists",
     venueSearch: "Search venue or type a name...",
     venueSuggested: "Suggested venues",
@@ -74,7 +73,9 @@ export const en = {
     currentImage: "Current image:",
     view: "view",
     artists: "Artists",
-    artistsHint: "Link registered artists performing at this concert.",
+    artistsHint:
+      "Search registered artists or type a name and click «Add» to include unregistered artists.",
+    artistsAddFreetext: "Add",
     publicOnlyHint:
       "Artists and venues publish concerts to the public calendar. Private concerts are not available for this role.",
     visibility: "Visibility",
@@ -207,8 +208,9 @@ export const en = {
   },
   artistSelector: {
     searchPlaceholder: "Search artists by name…",
-    noResults: "No artists found.",
+    noResults: "No registered artists found.",
     removeArtist: "Remove",
+    addFreetext: 'Add "{name}" as unregistered artist',
   },
   common: {
     loading: "Loading…",

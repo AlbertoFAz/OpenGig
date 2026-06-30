@@ -4,7 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { concertServerSchema } from "@/lib/schemas/concert";
 
 const bodySchema = concertServerSchema.extend({
-  artistIds: z.array(z.string().uuid()).min(1, "Añade al menos un artista."),
+  artistIds: z.array(z.string().uuid()).default([]),
+  artistFreeNames: z.array(z.string().min(1).max(200)).default([]),
 });
 
 export async function POST(request: Request) {
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
     visibility,
     venueId,
     artistIds,
+    artistFreeNames,
     ...required
   } = parsed.data;
 
@@ -56,11 +58,18 @@ export async function POST(request: Request) {
   // Auto-añadir el concierto al calendario del creador
   await supabase.from("calendar_entries").insert({ user_id: user.id, concert_id: data.id });
 
-  // Vincular artistas
+  // Vincular artistas registrados
   if (artistIds.length > 0) {
     await supabase
       .from("concert_artists")
       .insert(artistIds.map((artistId) => ({ concert_id: data.id, artist_profile_id: artistId })));
+  }
+
+  // Vincular artistas no registrados (texto libre)
+  if (artistFreeNames.length > 0) {
+    await supabase
+      .from("concert_artists")
+      .insert(artistFreeNames.map((name) => ({ concert_id: data.id, artist_name: name })));
   }
 
   return NextResponse.json({ id: data.id }, { status: 201 });

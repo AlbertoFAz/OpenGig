@@ -19,6 +19,7 @@ interface ConcertFormCardProps {
     id?: string;
     image_url?: string;
     artistIds?: string[];
+    artistFreeNames?: string[];
   };
 }
 

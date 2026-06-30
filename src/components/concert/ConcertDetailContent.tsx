@@ -19,13 +19,13 @@ import { LikeButton } from "@/components/concert/LikeButton";
 import { ExportConcertButtons } from "@/components/concert/ExportConcertButtons";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { Concert } from "@/lib/repositories/concerts";
-import type { ConcertArtistWithEndorsement } from "@/lib/repositories/profiles";
+import type { ConcertArtistEntry } from "@/lib/repositories/profiles";
 
 interface ConcertDetailContentProps {
   concert: Concert & {
     profiles?: { username: string; display_name: string | null } | null;
   };
-  artists: ConcertArtistWithEndorsement[];
+  artists: ConcertArtistEntry[];
   alreadySaved: boolean;
   alreadyLiked: boolean;
   userId: string | null;
@@ -53,8 +53,10 @@ export function ConcertDetailContent({
   const [endorsingVenue, setEndorsingVenue] = useState(false);
 
   // Saber si el usuario logueado ya avaló como artista
-  const myArtistEntry = artists.find((a) => a.id === userId);
-  const [artistEndorsed, setArtistEndorsed] = useState(!!myArtistEntry?.endorsed_at);
+  const myArtistEntry = artists.find((a) => a.kind === "registered" && a.id === userId);
+  const [artistEndorsed, setArtistEndorsed] = useState(
+    myArtistEntry?.kind === "registered" ? !!myArtistEntry.endorsed_at : false
+  );
 
   const dateLabel = format(
     new Date(concert.date_time),
@@ -85,7 +87,9 @@ export function ConcertDetailContent({
     }
   }
 
-  const endorsedCount = artists.filter((a) => a.endorsed_at).length + (venueEndorsed ? 1 : 0);
+  const endorsedCount =
+    artists.filter((a) => a.kind === "registered" && a.endorsed_at).length +
+    (venueEndorsed ? 1 : 0);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -169,22 +173,31 @@ export function ConcertDetailContent({
             {t.concert.artistsLabel}
           </p>
           <div className="flex flex-wrap gap-2">
-            {artists.map((artist) => (
-              <Link
-                key={artist.id}
-                href={`/profile/${artist.username}`}
-                className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/70"
-              >
-                <RoleBadge role="ARTIST" size={14} />
-                {artist.display_name}
-                {artist.endorsed_at && (
-                  <BadgeCheck
-                    className="size-3.5 text-emerald-500"
-                    aria-label="Artista ha avalado este concierto"
-                  />
-                )}
-              </Link>
-            ))}
+            {artists.map((artist, i) =>
+              artist.kind === "registered" ? (
+                <Link
+                  key={artist.id}
+                  href={`/profile/${artist.username}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/70"
+                >
+                  <RoleBadge role="ARTIST" size={14} />
+                  {artist.display_name}
+                  {artist.endorsed_at && (
+                    <BadgeCheck
+                      className="size-3.5 text-emerald-500"
+                      aria-label="Artista ha avalado este concierto"
+                    />
+                  )}
+                </Link>
+              ) : (
+                <span
+                  key={`free-${i}`}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-muted-foreground/40 px-3 py-1 text-sm font-medium text-muted-foreground"
+                >
+                  {artist.name}
+                </span>
+              )
+            )}
           </div>
         </div>
       )}

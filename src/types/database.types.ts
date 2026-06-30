@@ -1,6 +1,8 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5";
   };
@@ -56,19 +58,25 @@ export type Database = {
       };
       concert_artists: {
         Row: {
-          artist_profile_id: string;
+          artist_name: string | null;
+          artist_profile_id: string | null;
           concert_id: string;
           endorsed_at: string | null;
+          row_id: string;
         };
         Insert: {
-          artist_profile_id: string;
+          artist_name?: string | null;
+          artist_profile_id?: string | null;
           concert_id: string;
           endorsed_at?: string | null;
+          row_id?: string;
         };
         Update: {
-          artist_profile_id?: string;
+          artist_name?: string | null;
+          artist_profile_id?: string | null;
           concert_id?: string;
           endorsed_at?: string | null;
+          row_id?: string;
         };
         Relationships: [
           {
@@ -387,8 +395,8 @@ export type Database = {
         Args: { p_concert_id: string };
         Returns: number;
       };
-      is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
-      refresh_all_prestige: { Args: Record<PropertyKey, never>; Returns: undefined };
+      is_admin: { Args: never; Returns: boolean };
+      refresh_all_prestige: { Args: never; Returns: undefined };
     };
     Enums: {
       concert_visibility: "PUBLIC" | "PRIVATE";

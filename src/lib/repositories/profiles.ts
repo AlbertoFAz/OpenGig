@@ -84,20 +84,32 @@ export type ConcertArtistWithEndorsement = Pick<
   "id" | "username" | "display_name" | "image_url" | "role"
 > & { endorsed_at: string | null };
 
+export type RegisteredConcertArtist = ConcertArtistWithEndorsement & { kind: "registered" };
+export type UnregisteredConcertArtist = { kind: "unregistered"; name: string };
+export type ConcertArtistEntry = RegisteredConcertArtist | UnregisteredConcertArtist;
+
 /** Obtener los artistas de un concierto con su estado de aval */
-export async function getConcertArtists(
-  concertId: string
-): Promise<ConcertArtistWithEndorsement[]> {
+export async function getConcertArtists(concertId: string): Promise<ConcertArtistEntry[]> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("concert_artists")
-    .select("endorsed_at, profiles(id, username, display_name, image_url, role)")
+    .select("artist_name, endorsed_at, profiles(id, username, display_name, image_url, role)")
     .eq("concert_id", concertId);
 
   if (!data) return [];
-  return data.flatMap((row) =>
-    row.profiles ? [{ ...(row.profiles as unknown as Profile), endorsed_at: row.endorsed_at }] : []
-  );
+  const result: ConcertArtistEntry[] = [];
+  for (const row of data) {
+    if (row.profiles) {
+      result.push({
+        kind: "registered",
+        ...(row.profiles as unknown as Profile),
+        endorsed_at: row.endorsed_at,
+      });
+    } else if (row.artist_name) {
+      result.push({ kind: "unregistered", name: row.artist_name });
+    }
+  }
+  return result;
 }
 
 /** Sincronizar los artistas de un concierto (reemplazar lista completa) */
