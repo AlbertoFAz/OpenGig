@@ -8,21 +8,21 @@ export type ConcertUpdate = Database["public"]["Tables"]["concerts"]["Update"];
 export type Result<T, E = string> = { ok: true; data: T } | { ok: false; error: E };
 
 /** Conciertos públicos de los próximos N días para el calendario público */
-export async function getUpcomingConcerts(days = 90): Promise<Concert[]> {
+export async function getUpcomingConcerts(days = 90): Promise<ConcertWithCreator[]> {
   const supabase = await createClient();
   const from = new Date().toISOString();
   const to = new Date(Date.now() + days * 86_400_000).toISOString();
 
   const { data, error } = await supabase
     .from("concerts")
-    .select("*")
+    .select("*, profiles!created_by(display_name, prestige, role, username)")
     .eq("visibility", "PUBLIC")
     .gte("date_time", from)
     .lte("date_time", to)
     .order("date_time", { ascending: true });
 
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return (data ?? []) as ConcertWithCreator[];
 }
 
 export type ConcertWithCreator = Concert & {

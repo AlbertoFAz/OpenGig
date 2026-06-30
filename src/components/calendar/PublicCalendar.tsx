@@ -10,18 +10,19 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { CalendarToolbar } from "./CalendarToolbar";
-import type { Concert } from "@/lib/repositories/concerts";
+import { ROLE_COLORS, type UserRole } from "@/lib/schemas/profile";
+import type { ConcertWithCreator } from "@/lib/repositories/concerts";
 
 interface CalendarEvent {
   id: string;
   title: string;
   start: Date;
   end: Date;
-  resource: Concert;
+  resource: ConcertWithCreator;
 }
 
 interface PublicCalendarProps {
-  concerts?: Concert[];
+  concerts?: ConcertWithCreator[];
 }
 
 function EventCard({ event }: { event: CalendarEvent }) {
@@ -88,16 +89,16 @@ export function PublicCalendar({ concerts = [] }: PublicCalendarProps) {
     };
   });
 
-  const eventPropGetter = useCallback(
-    () => ({
+  const eventPropGetter = useCallback((event: CalendarEvent) => {
+    const role = (event.resource.profiles?.role ?? "USER") as UserRole;
+    return {
       style: {
-        backgroundColor: "oklch(0.65 0.16 35)",
+        backgroundColor: ROLE_COLORS[role],
         color: "#fff",
         border: "none",
       },
-    }),
-    []
-  );
+    };
+  }, []);
 
   const COMPONENTS = useMemo(
     () => ({

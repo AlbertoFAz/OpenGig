@@ -4,11 +4,11 @@ import { Separator } from "@/components/ui/separator";
 import { ConcertCard } from "@/components/concert/ConcertCard";
 import { PublicCalendar } from "@/components/calendar/PublicCalendar";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import type { Concert, ConcertWithCreator } from "@/lib/repositories/concerts";
+import type { ConcertWithCreator } from "@/lib/repositories/concerts";
 
 interface HomeContentProps {
   featured: ConcertWithCreator[];
-  upcoming: Concert[];
+  upcoming: ConcertWithCreator[];
 }
 
 export function HomeContent({ featured, upcoming }: HomeContentProps) {
