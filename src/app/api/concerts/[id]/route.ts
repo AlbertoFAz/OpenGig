@@ -57,6 +57,16 @@ export async function PATCH(request: Request, ctx: RouteContext) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Concierto no encontrado" }, { status: 404 });
 
+  // Si el concierto es o pasa a ser PUBLIC, garantizar que aparece en el calendario del creador
+  if (data.visibility === "PUBLIC") {
+    await supabase
+      .from("calendar_entries")
+      .upsert(
+        { user_id: data.created_by, concert_id: data.id },
+        { onConflict: "user_id,concert_id", ignoreDuplicates: true }
+      );
+  }
+
   // Sincronizar artistas si se envían (artistIds o artistFreeNames, basta con uno)
   if (artistIds !== undefined || artistFreeNames !== undefined) {
     await supabase.from("concert_artists").delete().eq("concert_id", id);
