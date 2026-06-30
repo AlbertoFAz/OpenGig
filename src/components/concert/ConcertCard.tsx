@@ -25,9 +25,15 @@ interface ConcertCardProps {
     artistCount: number;
     venueEndorsed: boolean;
   };
+  priority?: boolean;
 }
 
-export function ConcertCard({ concert, creator, endorsements }: ConcertCardProps) {
+export function ConcertCard({
+  concert,
+  creator,
+  endorsements,
+  priority = false,
+}: ConcertCardProps) {
   const { t, locale } = useLocale();
   const dateFnsLocale = locale === "en" ? enUS : es;
   const date = new Date(concert.date_time);
@@ -61,8 +67,9 @@ export function ConcertCard({ concert, creator, endorsements }: ConcertCardProps
             src={concert.image_url}
             alt={concert.name}
             fill
+            priority={priority}
             className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-900">
