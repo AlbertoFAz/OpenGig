@@ -46,6 +46,8 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   );
   const [artistObjects, setArtistObjects] = useState<ArtistOption[]>([]);
   const [venueId, setVenueId] = useState<string | undefined>(defaultValues?.venueId);
+  // true cuando el usuario ha escrito algo en el campo nombre en esta sesión
+  const [nameCustomized, setNameCustomized] = useState(false);
   const [imageMode, setImageMode] = useState<"file" | "url">("file");
   const [imageUrlInput, setImageUrlInput] = useState("");
   const isEditing = !!defaultValues?.id;
@@ -66,11 +68,14 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
   });
 
   async function onSubmit(values: ConcertInput) {
-    // Auto-generar título a partir de los artistas si se dejó vacío
     const allArtistNames = [...artistObjects.map((a) => a.display_name), ...artistFreeNames];
+    const artistTitle = allArtistNames.length > 0 ? allArtistNames.join(" + ") : undefined;
+    // Si el usuario escribió un nombre explícito en esta sesión, respetarlo.
+    // En caso contrario, los artistas tienen prioridad sobre cualquier título anterior.
     const resolvedName =
+      (nameCustomized ? values.name?.trim() : undefined) ||
+      artistTitle ||
       values.name?.trim() ||
-      (allArtistNames.length > 0 ? allArtistNames.join(" + ") : undefined) ||
       values.venue_name;
 
     setLoading(true);
@@ -184,7 +189,14 @@ export function ConcertForm({ defaultValues, userRole = "USER" }: ConcertFormPro
             <FormItem>
               <FormLabel>{t.concert.name}</FormLabel>
               <FormControl>
-                <Input placeholder={t.concert.namePlaceholder} {...field} />
+                <Input
+                  placeholder={t.concert.namePlaceholder}
+                  {...field}
+                  onChange={(e) => {
+                    setNameCustomized(true);
+                    field.onChange(e);
+                  }}
+                />
               </FormControl>
               <FormDescription>{t.concert.nameHint}</FormDescription>
               <FormMessage />
