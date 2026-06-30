@@ -69,7 +69,13 @@ export function CalendarSubscribeButton({ initialToken }: CalendarSubscribeButto
         >
           {subscribeUrl}
         </code>
-        <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={copyUrl}>
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-8 w-8 shrink-0"
+          onClick={copyUrl}
+          aria-label={t.export.copyUrl}
+        >
           <Copy size={14} />
         </Button>
       </div>

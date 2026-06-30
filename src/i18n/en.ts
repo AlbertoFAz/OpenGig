@@ -199,6 +199,7 @@ export const en = {
     downloadIcs: "Download .ics",
     openGoogleCalendar: "Open in Google Calendar",
     subscribeUrl: "Subscription URL",
+    copyUrl: "Copy URL",
     subscribeCopied: "URL copied to clipboard.",
     subscribeHint: "Paste this URL into Google Calendar or Apple Calendar to keep it in sync.",
     regenerateToken: "Revoke and regenerate token",

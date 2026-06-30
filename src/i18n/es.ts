@@ -201,6 +201,7 @@ export const es = {
     downloadIcs: "Descargar .ics",
     openGoogleCalendar: "Abrir en Google Calendar",
     subscribeUrl: "URL de suscripción",
+    copyUrl: "Copiar URL",
     subscribeCopied: "URL copiada al portapapeles.",
     subscribeHint:
       "Pega esta URL en Google Calendar o Apple Calendar para mantenerlo sincronizado.",
