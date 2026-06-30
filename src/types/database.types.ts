@@ -405,7 +405,8 @@ export type Database = {
         | "LIKE_RECEIVED"
         | "CONCERT_UPDATED"
         | "PENDING_APPROVAL"
-        | "CONCERT_ENDORSED";
+        | "CONCERT_ENDORSED"
+        | "CONCERT_PUBLISHED";
       user_role: "USER" | "ARTIST" | "VENUE" | "COLLABORATOR" | "ADMIN";
     };
     CompositeTypes: {
@@ -539,6 +540,7 @@ export const Constants = {
         "CONCERT_UPDATED",
         "PENDING_APPROVAL",
         "CONCERT_ENDORSED",
+        "CONCERT_PUBLISHED",
       ],
       user_role: ["USER", "ARTIST", "VENUE", "COLLABORATOR", "ADMIN"],
     },

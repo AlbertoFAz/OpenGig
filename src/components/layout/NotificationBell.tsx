@@ -21,6 +21,9 @@ const TYPE_ICONS: Record<string, string> = {
   PROMOTION_OFFER: "🌟",
   LIKE_RECEIVED: "❤️",
   CONCERT_UPDATED: "🎵",
+  CONCERT_PUBLISHED: "🎤",
+  CONCERT_ENDORSED: "✅",
+  PENDING_APPROVAL: "⏳",
 };
 
 export function NotificationBell({
