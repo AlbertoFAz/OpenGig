@@ -59,3 +59,10 @@ drafts/
 
 # Playwright MCP (capturas y logs de automatización local)
 .playwright-mcp/
+
+# Estado de autenticación de Playwright (tokens de sesión — no commitear)
+tests/e2e/.auth/
+
+# Resultados de Playwright
+playwright-report/
+test-results/

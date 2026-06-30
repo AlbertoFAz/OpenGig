@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import withSerwist from "@serwist/next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const isDev = process.env.NODE_ENV === "development";
 
@@ -61,10 +62,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSerwist({
+const withSerwistConfig = withSerwist({
   swSrc: "src/app/sw.ts",
   swDest: "public/sw.js",
   reloadOnOnline: true,
   // Deshabilitar SW en desarrollo para evitar interferencias con hot-reload
   disable: isDev,
 })(nextConfig);
+
+export default withSentryConfig(withSerwistConfig, {
+  ...(process.env.SENTRY_ORG ? { org: process.env.SENTRY_ORG } : {}),
+  ...(process.env.SENTRY_PROJECT ? { project: process.env.SENTRY_PROJECT } : {}),
+  ...(process.env.SENTRY_AUTH_TOKEN ? { authToken: process.env.SENTRY_AUTH_TOKEN } : {}),
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  // Eliminar source maps del bundle público tras subirlos a Sentry
+  sourcemaps: { deleteSourcemapsAfterUpload: true },
+  disableLogger: true,
+  automaticVercelMonitors: false,
+});

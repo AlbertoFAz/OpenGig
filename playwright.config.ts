@@ -1,6 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://localhost:3000";
+const authFile = "tests/e2e/.auth/user.json";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -14,9 +15,29 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
+    // 1. Setup: realiza el login y guarda el estado de autenticación
     {
-      name: "chromium",
+      name: "setup",
+      testMatch: /global\.setup\.ts/,
       use: { ...devices["Desktop Chrome"] },
+    },
+
+    // 2. Tests públicos: no requieren autenticación
+    {
+      name: "public",
+      testIgnore: /global\.setup|concerts\.spec|private-calendar\.spec/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+
+    // 3. Tests autenticados: dependen del setup
+    {
+      name: "authenticated",
+      testMatch: /\/(concerts|private-calendar)\.spec\.ts/,
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: authFile,
+      },
+      dependencies: ["setup"],
     },
   ],
   ...(process.env.CI ? { workers: 1 } : {}),
