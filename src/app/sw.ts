@@ -22,9 +22,12 @@ serwist.addEventListeners();
 
 // Handler de notificaciones push entrantes
 self.addEventListener("push", (event: PushEvent) => {
-  const data =
-    (event.data?.json() as { title?: string; body?: string; icon?: string; url?: string } | null) ??
-    {};
+  let data: { title?: string; body?: string; icon?: string; url?: string } = {};
+  try {
+    if (event.data) data = event.data.json() as typeof data;
+  } catch {
+    if (event.data) data = { body: event.data.text() };
+  }
   const title = data.title ?? "OpenGig";
   const options: NotificationOptions = {
     body: data.body ?? "Tienes una nueva notificación.",
