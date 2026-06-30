@@ -16,6 +16,8 @@ export function CalendarSubscribeButton({ initialToken }: CalendarSubscribeButto
   const [token, setToken] = useState(initialToken);
   const [regenerating, setRegenerating] = useState(false);
 
+  // En servidor window no existe → URL relativa; en cliente → URL absoluta con origin.
+  // suppressHydrationWarning en los elementos que muestran esta URL evita el error #418.
   const subscribeUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/api/me/calendar/export.ics?token=${token}`
@@ -60,7 +62,11 @@ export function CalendarSubscribeButton({ initialToken }: CalendarSubscribeButto
       <p className="text-muted-foreground mb-3 text-xs">{t.export.subscribeHint}</p>
 
       <div className="mb-3 flex items-center gap-2">
-        <code className="bg-muted text-muted-foreground flex-1 overflow-hidden text-ellipsis rounded px-2 py-1 text-xs">
+        {/* suppressHydrationWarning: el origen difiere entre servidor (relativo) y cliente (absoluto) */}
+        <code
+          suppressHydrationWarning
+          className="bg-muted text-muted-foreground flex-1 overflow-hidden text-ellipsis rounded px-2 py-1 text-xs"
+        >
           {subscribeUrl}
         </code>
         <Button variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={copyUrl}>
@@ -70,7 +76,10 @@ export function CalendarSubscribeButton({ initialToken }: CalendarSubscribeButto
 
       <div className="flex flex-wrap gap-2">
         <Button variant="outline" size="sm" asChild>
-          <a href={webcalUrl}>{t.export.subscribeCalendar}</a>
+          {/* suppressHydrationWarning: href con origin absoluto difiere en SSR */}
+          <a href={webcalUrl} suppressHydrationWarning>
+            {t.export.subscribeCalendar}
+          </a>
         </Button>
 
         <Button
