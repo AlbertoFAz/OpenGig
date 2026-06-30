@@ -146,7 +146,9 @@ export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) 
         </span>
       </div>
 
-      <div className="h-[calc(100vh-14rem)] min-h-[520px]">
+      {/* suppressHydrationWarning: react-big-calendar renderiza fechas con new Date()
+          que difieren entre servidor (UTC) y cliente (zona horaria local) */}
+      <div className="h-[calc(100vh-14rem)] min-h-[520px]" suppressHydrationWarning>
         <Calendar
           localizer={localizer}
           events={events}

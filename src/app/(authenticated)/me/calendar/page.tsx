@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 import { getUserCalendarEntries } from "@/lib/repositories/calendar-entries";
-import { PrivateCalendarLazy } from "@/components/calendar/PrivateCalendarLazy";
+import { PrivateCalendar } from "@/components/calendar/PrivateCalendar";
 import { NewPersonalEntryDialog } from "@/components/concert/NewPersonalEntryDialog";
 import { CalendarSubscribeButton } from "@/components/calendar/CalendarSubscribeButton";
 import { CalendarPageHeader } from "@/components/calendar/CalendarPageHeader";
@@ -30,7 +30,7 @@ export default async function MyCalendarPage() {
         <NewPersonalEntryDialog />
       </div>
 
-      <PrivateCalendarLazy entries={entries} userId={user.id} />
+      <PrivateCalendar entries={entries} userId={user.id} />
 
       {subscriptionToken && (
         <div className="mt-10">
