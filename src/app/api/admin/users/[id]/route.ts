@@ -30,7 +30,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ error: "status inválido" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("profiles").update({ status: body.status }).eq("id", id);
+  const serviceClient = createServiceClient();
+  const { error } = await serviceClient
+    .from("profiles")
+    .update({ status: body.status })
+    .eq("id", id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
