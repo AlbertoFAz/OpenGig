@@ -48,13 +48,17 @@ export async function getFeaturedConcerts(): Promise<ConcertWithCreator[]> {
 }
 
 /** Detalle de un concierto por id */
-export async function getConcertById(
-  id: string
-): Promise<Result<Concert & { profiles: { username: string; display_name: string } | null }>> {
+export async function getConcertById(id: string): Promise<
+  Result<
+    Concert & {
+      profiles: { username: string; display_name: string; role: string } | null;
+    }
+  >
+> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("concerts")
-    .select("*, profiles!created_by(username, display_name)")
+    .select("*, profiles!created_by(username, display_name, role)")
     .eq("id", id)
     .maybeSingle();
 

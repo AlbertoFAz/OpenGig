@@ -23,7 +23,7 @@ import type { ConcertArtistEntry } from "@/lib/repositories/profiles";
 
 interface ConcertDetailContentProps {
   concert: Concert & {
-    profiles?: { username: string; display_name: string | null } | null;
+    profiles?: { username: string; display_name: string | null; role: string } | null;
   };
   artists: ConcertArtistEntry[];
   alreadySaved: boolean;
@@ -124,12 +124,16 @@ export function ConcertDetailContent({
       </div>
 
       {concert.profiles && (
-        <p className="mb-6 text-sm text-muted-foreground">
+        <p className="mb-6 flex items-center gap-1.5 text-sm text-muted-foreground">
           {t.concert.publishedBy}{" "}
           <Link
             href={`/profile/${concert.profiles.username}`}
-            className="font-medium hover:underline"
+            className="inline-flex items-center gap-1 font-medium hover:underline"
           >
+            <RoleBadge
+              role={concert.profiles.role as Parameters<typeof RoleBadge>[0]["role"]}
+              size={13}
+            />
             {concert.profiles.display_name ?? concert.profiles.username}
           </Link>
         </p>
