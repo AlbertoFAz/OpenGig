@@ -1,10 +1,25 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Separator } from "@/components/ui/separator";
 import { ConcertCard } from "@/components/concert/ConcertCard";
-import { PublicCalendar } from "@/components/calendar/PublicCalendar";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { ConcertWithCreator } from "@/lib/repositories/concerts";
+
+// react-big-calendar es pesado: se carga de forma diferida para sacarlo
+// del camino crítico de renderizado y reducir el trabajo del hilo principal.
+const PublicCalendar = dynamic(
+  () =>
+    import("@/components/calendar/PublicCalendar").then((m) => ({
+      default: m.PublicCalendar,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[calc(100vh-10rem)] min-h-[520px] animate-pulse rounded-2xl bg-muted/40" />
+    ),
+  }
+);
 
 interface HomeContentProps {
   featured: ConcertWithCreator[];
