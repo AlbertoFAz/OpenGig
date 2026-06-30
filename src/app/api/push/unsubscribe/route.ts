@@ -14,8 +14,7 @@ export async function DELETE(request: Request) {
   }
   const { endpoint } = body as { endpoint: string };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("push_subscriptions")
     .delete()
     .eq("user_id", user.id)

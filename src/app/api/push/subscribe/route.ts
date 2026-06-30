@@ -14,8 +14,7 @@ export async function POST(request: Request) {
   }
   const sub = body as { endpoint: string; keys: { p256dh: string; auth: string } };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { error } = await (supabase as any)
+  const { error } = await supabase
     .from("push_subscriptions")
     .upsert(
       { user_id: user.id, endpoint: sub.endpoint, p256dh: sub.keys.p256dh, auth: sub.keys.auth },
