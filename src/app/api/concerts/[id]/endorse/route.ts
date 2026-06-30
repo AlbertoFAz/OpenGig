@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -41,7 +41,8 @@ export async function POST(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "No eres la sala de este concierto" }, { status: 403 });
     }
 
-    const { error } = await supabase
+    const serviceClient = createServiceClient();
+    const { error } = await serviceClient
       .from("concerts")
       .update({ venue_endorsed_at: new Date().toISOString() })
       .eq("id", concertId);

@@ -6,7 +6,17 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { CalendarDays, MapPin, Music2, Pencil, Ticket, BadgeCheck } from "lucide-react";
+import {
+  CalendarDays,
+  MapPin,
+  Music2,
+  Pencil,
+  Ticket,
+  BadgeCheck,
+  Mic2,
+  Building2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +57,7 @@ export function ConcertDetailContent({
   isVenue,
 }: ConcertDetailContentProps) {
   const { t, locale } = useLocale();
+  const router = useRouter();
   const dateFnsLocale = locale === "en" ? enUS : es;
   const [venueEndorsed, setVenueEndorsed] = useState(!!concert.venue_endorsed_at);
   const [endorsingArtist, setEndorsingArtist] = useState(false);
@@ -79,6 +90,7 @@ export function ConcertDetailContent({
       if (as === "artist") setArtistEndorsed(true);
       else setVenueEndorsed(true);
       toast.success("Aval registrado");
+      router.refresh();
     } catch {
       toast.error("Error al registrar el aval");
     } finally {
@@ -116,14 +128,16 @@ export function ConcertDetailContent({
           {isPast && <Badge variant="secondary">{t.concert.past}</Badge>}
           {endorsedArtistCount > 0 && (
             <Badge className="flex items-center gap-1 bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
-              <BadgeCheck className="size-3.5" />
-              🎸 {endorsedArtistCount} {endorsedArtistCount === 1 ? "artista" : "artistas"}
+              <Mic2 className="size-3.5" />
+              <span>
+                {endorsedArtistCount} {endorsedArtistCount === 1 ? "artista" : "artistas"}
+              </span>
             </Badge>
           )}
           {venueEndorsed && (
             <Badge className="flex items-center gap-1 bg-sky-600/10 text-sky-600 border-sky-600/20">
-              <BadgeCheck className="size-3.5" />
-              🏢 Sala
+              <Building2 className="size-3.5" />
+              <span>Sala</span>
             </Badge>
           )}
         </div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { enUS } from "date-fns/locale";
-import { Heart, MapPin, Music2, Ticket } from "lucide-react";
+import { Heart, MapPin, Mic2, Building2, Music2, Ticket } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { RoleBadge } from "@/components/ui/RoleBadge";
@@ -90,12 +90,13 @@ export function ConcertCard({ concert, creator, endorsements }: ConcertCardProps
           )}
           {(endorsements?.artistCount ?? 0) > 0 && (
             <div className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-emerald-300 backdrop-blur-sm">
-              🎸 {endorsements!.artistCount}
+              <Mic2 className="size-3" />
+              <span>{endorsements!.artistCount}</span>
             </div>
           )}
           {endorsements?.venueEndorsed && (
-            <div className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-emerald-300 backdrop-blur-sm">
-              🏢
+            <div className="flex items-center gap-1 rounded-full bg-black/40 px-2 py-1 text-xs text-sky-300 backdrop-blur-sm">
+              <Building2 className="size-3" />
             </div>
           )}
         </div>
