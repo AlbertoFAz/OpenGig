@@ -263,17 +263,17 @@ export function ConcertDetailContent({
               <Button
                 size="sm"
                 variant="outline"
-                className="border-emerald-600/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-600/10"
+                className="border-sky-600/30 text-sky-700 dark:text-sky-400 hover:bg-sky-600/10"
                 onClick={() => handleEndorse("venue")}
                 disabled={endorsingVenue}
               >
-                <BadgeCheck className="size-4 mr-1.5" />
+                <Building2 className="size-4 mr-1.5" />
                 Avalar como sala
               </Button>
             )}
             {isVenue && venueEndorsed && (
-              <Badge className="bg-emerald-600/10 text-emerald-600 border-emerald-600/20">
-                <BadgeCheck className="size-3.5 mr-1" /> Avalado como sala
+              <Badge className="bg-sky-600/10 text-sky-600 border-sky-600/20">
+                <Building2 className="size-3.5 mr-1" /> Avalado como sala
               </Badge>
             )}
           </div>
