@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogOut, UserRound, ShieldAlert } from "lucide-react";
+import { LogOut, UserRound, ShieldAlert, CalendarDays, PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
@@ -75,6 +75,19 @@ export function UserMenu({ user, role }: UserMenuProps) {
             <p className="text-xs text-muted-foreground truncate">{user.email}</p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/me/calendar" className="cursor-pointer">
+            <CalendarDays data-icon="inline-start" />
+            {t.nav.myCalendar}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/concerts/new" className="cursor-pointer">
+            <PlusCircle data-icon="inline-start" />
+            {t.nav.publishConcert}
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href="/me/profile" className="cursor-pointer">
