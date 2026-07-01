@@ -71,6 +71,34 @@ test.describe("Conciertos — flujos autenticados", () => {
     expect(counterAfter).not.toBe(counterBefore);
   });
 
+  test("la página de edición de un concierto propio es accesible", async ({ page }) => {
+    await page.goto("/concerts/new");
+    await expect(page).not.toHaveURL(/\/login/);
+
+    // Crear un concierto rápido para tener un ID con el que ir a editar
+    const future = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const dateStr = `${future.getFullYear()}-${pad(future.getMonth() + 1)}-${pad(future.getDate())}T20:00`;
+
+    const nameField = page.getByLabel(/nombre del concierto/i);
+    await nameField.fill("Concierto E2E Edición");
+    await page.locator('input[type="datetime-local"]').fill(dateStr);
+    await page.getByPlaceholder(/buscar sala|sala/i).fill("Sala Edit Test");
+    await page.getByRole("button", { name: /publicar concierto|guardar/i }).click();
+
+    await expect(page).toHaveURL(/\/concerts\/[0-9a-f-]{36}/, { timeout: 15_000 });
+
+    // Navegar a la ruta de edición
+    const concertId = page.url().split("/concerts/")[1]?.split("/")[0];
+    if (concertId) {
+      await page.goto(`/concerts/${concertId}/edit`);
+      await expect(page).not.toHaveURL(/\/login/);
+      await expect(page.getByRole("heading")).toBeVisible();
+      // El formulario de edición debe tener el nombre del concierto pre-rellenado
+      await expect(page.getByLabel(/nombre del concierto/i)).toHaveValue("Concierto E2E Edición");
+    }
+  });
+
   test("el detalle de concierto muestra la información principal", async ({ page }) => {
     await page.goto("/");
 

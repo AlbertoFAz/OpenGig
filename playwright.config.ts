@@ -25,14 +25,15 @@ export default defineConfig({
     // 2. Tests públicos: no requieren autenticación
     {
       name: "public",
-      testIgnore: /global\.setup|concerts\.spec|private-calendar\.spec/,
+      testIgnore:
+        /global\.setup|concerts\.spec|private-calendar\.spec|profile\.spec|accessibility-auth\.spec/,
       use: { ...devices["Desktop Chrome"] },
     },
 
     // 3. Tests autenticados: dependen del setup
     {
       name: "authenticated",
-      testMatch: /\/(concerts|private-calendar)\.spec\.ts/,
+      testMatch: /\/(concerts|private-calendar|profile|accessibility-auth)\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: authFile,
