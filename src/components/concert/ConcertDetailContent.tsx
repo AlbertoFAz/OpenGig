@@ -161,15 +161,20 @@ export function ConcertDetailContent({
 
       <dl className="mb-6 grid gap-2.5 text-sm">
         <div className="flex items-start gap-2.5">
-          <CalendarDays className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+          <dt className="sr-only">Fecha</dt>
+          <CalendarDays
+            className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+            aria-hidden="true"
+          />
           {/* suppressHydrationWarning: server (UTC) and client (local timezone) format the same UTC timestamp differently */}
-          <span className="capitalize" suppressHydrationWarning>
+          <dd className="capitalize" suppressHydrationWarning>
             {dateLabel}
-          </span>
+          </dd>
         </div>
         <div className="flex items-start gap-2.5">
-          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-          <span>
+          <dt className="sr-only">Lugar</dt>
+          <MapPin className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+          <dd>
             {concert.venue_name}
             {venueEndorsed && (
               <BadgeCheck
@@ -180,16 +185,17 @@ export function ConcertDetailContent({
             {concert.venue_address && (
               <span className="text-muted-foreground"> · {concert.venue_address}</span>
             )}
-          </span>
+          </dd>
         </div>
         {concert.price !== null && (
           <div className="flex items-center gap-2.5">
-            <Ticket className="size-4 shrink-0 text-muted-foreground" />
-            <span className="font-medium">
+            <dt className="sr-only">Precio</dt>
+            <Ticket className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <dd className="font-medium">
               {Number(concert.price) === 0
                 ? t.concert.free
                 : `${Number(concert.price).toFixed(2)} €`}
-            </span>
+            </dd>
           </div>
         )}
       </dl>
