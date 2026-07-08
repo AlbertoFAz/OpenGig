@@ -43,10 +43,11 @@ function EventCard({ event }: { event: CalendarEvent }) {
 }
 
 /* Paleta semántica para cada tipo de entrada */
+/* Oscurecidos para garantizar ratio ≥ 4.5:1 con texto blanco (WCAG AA) */
 const EVENT_COLORS = {
-  mine: { bg: "oklch(0.6 0.17 145)", border: "oklch(0.5 0.17 145)" },
-  saved: { bg: "oklch(0.58 0.18 270)", border: "oklch(0.48 0.18 270)" },
-  personal: { bg: "oklch(0.65 0.16 35)", border: "oklch(0.55 0.16 35)" },
+  mine: { bg: "oklch(0.42 0.17 145)", border: "oklch(0.35 0.17 145)" },
+  saved: { bg: "oklch(0.42 0.18 270)", border: "oklch(0.35 0.18 270)" },
+  personal: { bg: "oklch(0.46 0.16 35)", border: "oklch(0.38 0.16 35)" },
 } as const;
 
 export function PrivateCalendar({ entries = [], userId }: PrivateCalendarProps) {

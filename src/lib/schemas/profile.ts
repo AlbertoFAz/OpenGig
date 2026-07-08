@@ -17,13 +17,14 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   ADMIN: "Administrador",
 };
 
-/** Color del borde de tarjeta y acento de calendairo según el rol del creador */
+/** Color del borde de tarjeta y acento de calendario según el rol del creador.
+ *  Oscurecidos para garantizar ratio ≥ 4.5:1 con texto blanco (WCAG AA). */
 export const ROLE_COLORS: Record<UserRole, string> = {
-  USER: "oklch(0.6 0.15 240)", // azul
-  ARTIST: "oklch(0.65 0.16 35)", // ámbar/naranja
-  VENUE: "oklch(0.58 0.18 300)", // violeta
-  COLLABORATOR: "oklch(0.6 0.17 145)", // verde
-  ADMIN: "oklch(0.58 0.22 15)", // rojo
+  USER: "oklch(0.42 0.15 240)", // azul oscuro
+  ARTIST: "oklch(0.46 0.16 35)", // ámbar oscuro
+  VENUE: "oklch(0.42 0.18 300)", // violeta oscuro
+  COLLABORATOR: "oklch(0.42 0.17 145)", // verde oscuro
+  ADMIN: "oklch(0.42 0.22 15)", // rojo oscuro
 };
 
 export const ROLE_DESCRIPTIONS: Record<RegisterableRole, string> = {
