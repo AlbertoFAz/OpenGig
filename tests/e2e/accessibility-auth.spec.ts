@@ -52,7 +52,7 @@ test("accesibilidad (autenticado): detalle de un concierto público", async ({ p
   }
 
   await page.goto("/");
-  const firstConcert = page.locator('a[href^="/concerts/"]').first();
+  const firstConcert = page.locator('a[href^="/concerts/"]:not([href$="/new"])').first();
   const hasConcerts = await firstConcert.isVisible({ timeout: 8_000 }).catch(() => false);
   if (!hasConcerts) {
     test.skip();
