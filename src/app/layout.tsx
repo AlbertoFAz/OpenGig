@@ -31,9 +31,10 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/favicon.ico" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
       { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/OpenGig_favicon.svg", type: "image/svg+xml" },
     ],
     apple: "/apple-touch-icon.png",
   },
